@@ -7,16 +7,23 @@
     "dashboard": "Dashboard",
     "expenses": "Expenses",
     "reports": "Reports",
-    "summary": "Summary"
+    "summary": "Summary",
+    "login": "Login",
+    "logout": "Logout"
   },
   "dashboard": {
     "title": "Dashboard",
+    "totalIncome": "Total Income",
     "totalExpenses": "Total Expenses",
     "thisMonth": "This Month",
     "monthlyBudget": "Monthly Budget",
     "remaining": "Remaining",
     "income": "Income",
-    "expense": "Expense"
+    "expense": "Expense",
+    "monthlyIncome": "Monthly Income",
+    "monthlyExpenses": "Monthly Expenses",
+    "monthlyNet": "Monthly Net",
+    "totalTransactions": "Total Transactions"
   },
   "expenses": {
     "title": "Expenses",
@@ -52,15 +59,37 @@
   "reports": {
     "title": "Reports",
     "monthlyTrend": "Monthly Trend",
-    "categoryBreakdown": "Category Breakdown"
+    "categoryBreakdown": "Category Breakdown",
+    "categoryDetails": "Category Details"
   },
   "common": {
     "loading": "Loading...",
     "save": "Save",
     "cancel": "Cancel",
     "delete": "Delete",
+    "edit": "Edit",
     "close": "Close",
     "offline": "Offline",
-    "online": "Online"
+    "online": "Online",
+    "month": "Month",
+    "year": "Year",
+    "date": "Date",
+    "description": "Description",
+    "amount": "Amount",
+    "income": "Income",
+    "expense": "Expense",
+    "transactions": "Transactions",
+    "transactionCount": "Transactions Count",
+    "netBalance": "Net Balance",
+    "noTransactions": "No transactions for",
+    "categories": "Categories",
+    "noCategoryData": "No category data available",
+    "amountHelper": "Positive for income, negative for expenses",
+    "addTransaction": "Add Transaction",
+    "editTransaction": "Edit Transaction",
+    "noData": "No data available for",
+    "type": "Type",
+    "actions": "Actions",
+    "pleaseLogin": "Please login to view this page"
   }
 }

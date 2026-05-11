@@ -1,69 +1,43 @@
 import HistoryIcon from '@mui/icons-material/History'
 import { Alert, Box, Card, CardContent, CircularProgress, Grid, Typography, FormControl, InputLabel, Select, MenuItem } from '@mui/material'
-import { useEffect, useState } from 'react'
-import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis, LineChart, Line, PieChart, Pie, Cell } from 'recharts'
-import { transactionService } from '../utils/firebaseService'
+import { useState } from 'react'
+import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis, LineChart, Line } from 'recharts'
+import { useAuthUser } from '../hooks/useAuthUser'
+import { useYearlyStats } from '../hooks/useYearlyStats'
 import { i18n } from '../i18n/i18n'
 
 const COLORS = ['#667eea', '#764ba2', '#f093fb', '#f5576c', '#ff9800', '#4caf50', '#00bcd4', '#9c27b0']
 
 export default function Reports() {
-  const [reportData, setReportData] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const { user, initializing } = useAuthUser()
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear())
+  const { stats, loading, error } = useYearlyStats(user?.uid, selectedYear)
 
   const t = (key) => i18n.t(key)
-  const userId = 'test-user' // Replace with actual auth
 
-  useEffect(() => {
-    fetchReportData()
-  }, [selectedYear])
-
-  const fetchReportData = async () => {
-    try {
-      setLoading(true)
-      const yearSummary = await transactionService.getYearlySummary(userId, selectedYear)
-      
-      // Prepare data for charts
-      const monthlyData = Object.entries(yearSummary.monthlyData).map(([month, data]) => ({
-        month: month.split(' ')[0],
-        income: data.income,
-        expenses: data.expenses,
-        net: data.net
-      }))
-
-      // Category breakdown
-      const categoryData = {}
-      yearSummary.transactions.forEach(trans => {
-        if (!categoryData[trans.category]) {
-          categoryData[trans.category] = { name: trans.category, expenses: 0, income: 0 }
-        }
-        if (trans.amount > 0) {
-          categoryData[trans.category].income += trans.amount
-        } else {
-          categoryData[trans.category].expenses += Math.abs(trans.amount)
-        }
-      })
-
-      const categories = Object.values(categoryData)
-
-      setReportData({
-        monthlyData,
-        categories,
-        yearSummary
-      })
-    } catch (error) {
-      console.error('Error fetching report:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  if (loading) {
+  if (initializing || loading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
         <CircularProgress />
       </Box>
+    )
+  }
+
+  if (!user) {
+    return (
+      <Box sx={{ py: 8, textAlign: 'center' }}>
+        <Typography variant="h6" gutterBottom>
+          {t('common.pleaseLogin')}
+        </Typography>
+      </Box>
+    )
+  }
+
+  if (error) {
+    return (
+      <Alert severity="error">
+        {error}
+      </Alert>
     )
   }
 
@@ -76,14 +50,14 @@ export default function Reports() {
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           <HistoryIcon sx={{ fontSize: 40, color: 'primary.main' }} />
           <Typography variant="h3" component="h1">
-            {t('reports.title')}
+            {t('navigation.reports')}
           </Typography>
         </Box>
         <FormControl sx={{ minWidth: 150 }}>
-          <InputLabel>Year</InputLabel>
+          <InputLabel>{t('common.year')}</InputLabel>
           <Select
             value={selectedYear}
-            label="Year"
+            label={t('common.year')}
             onChange={(e) => setSelectedYear(e.target.value)}
           >
             {years.map(year => (
@@ -95,9 +69,9 @@ export default function Reports() {
         </FormControl>
       </Box>
 
-      {!reportData || !reportData.monthlyData || reportData.monthlyData.length === 0 ? (
+      {!stats || !stats.monthlyData || stats.monthlyData.length === 0 ? (
         <Alert severity="info">
-          No data available for {selectedYear}
+          {t('common.noData')} {selectedYear}
         </Alert>
       ) : (
         <>
@@ -110,13 +84,10 @@ export default function Reports() {
               }}>
                 <CardContent>
                   <Typography sx={{ opacity: 0.9 }} gutterBottom>
-                    Total Income
+                    {t('dashboard.totalIncome')}
                   </Typography>
                   <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
-                    +${reportData.yearSummary.transactions
-                      .filter(t => t.amount > 0)
-                      .reduce((sum, t) => sum + t.amount, 0)
-                      .toFixed(2)}
+                    +${stats.income.toFixed(2)}
                   </Typography>
                 </CardContent>
               </Card>
@@ -129,13 +100,10 @@ export default function Reports() {
               }}>
                 <CardContent>
                   <Typography sx={{ opacity: 0.9 }} gutterBottom>
-                    Total Expenses
+                    {t('dashboard.totalExpenses')}
                   </Typography>
                   <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
-                    -${reportData.yearSummary.transactions
-                      .filter(t => t.amount < 0)
-                      .reduce((sum, t) => sum + Math.abs(t.amount), 0)
-                      .toFixed(2)}
+                    -${Math.abs(stats.expenses).toFixed(2)}
                   </Typography>
                 </CardContent>
               </Card>
@@ -145,10 +113,10 @@ export default function Reports() {
               <Card>
                 <CardContent>
                   <Typography color="textSecondary" gutterBottom>
-                    Transactions Count
+                    {t('common.transactionCount')}
                   </Typography>
                   <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
-                    {reportData.yearSummary.transactions.length}
+                    {stats.transactionCount}
                   </Typography>
                 </CardContent>
               </Card>
@@ -158,10 +126,10 @@ export default function Reports() {
               <Card>
                 <CardContent>
                   <Typography color="textSecondary" gutterBottom>
-                    Categories
+                    {t('common.categories')}
                   </Typography>
                   <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
-                    {reportData.categories.length}
+                    {stats.categories.length}
                   </Typography>
                 </CardContent>
               </Card>
@@ -175,7 +143,7 @@ export default function Reports() {
                 {t('reports.monthlyTrend')}
               </Typography>
               <ResponsiveContainer width="100%" height={300}>
-                <LineChart data={reportData.monthlyData}>
+                <LineChart data={stats.monthlyData}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="month" />
                   <YAxis />
@@ -193,11 +161,11 @@ export default function Reports() {
           <Card sx={{ mb: 3 }}>
             <CardContent>
               <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
-                {t('reports.categoryBreakdown')} - {t('dashboard.expense')}
+                {t('reports.categoryBreakdown')}
               </Typography>
-              {reportData.categories.length > 0 ? (
+              {stats.categories.length > 0 ? (
                 <ResponsiveContainer width="100%" height={300}>
-                  <BarChart data={reportData.categories}>
+                  <BarChart data={stats.categories}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="name" />
                     <YAxis />
@@ -208,7 +176,7 @@ export default function Reports() {
                   </BarChart>
                 </ResponsiveContainer>
               ) : (
-                <Alert severity="info">No category data available</Alert>
+                <Alert severity="info">{t('common.noCategoryData')}</Alert>
               )}
             </CardContent>
           </Card>
@@ -217,10 +185,10 @@ export default function Reports() {
           <Card>
             <CardContent>
               <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
-                Category Details
+                {t('reports.categoryDetails')}
               </Typography>
               <Box sx={{ overflowX: 'auto' }}>
-                {reportData.categories.map((category, index) => (
+                {stats.categories.map((category, index) => (
                   <Box key={index} sx={{
                     display: 'flex',
                     justifyContent: 'space-between',

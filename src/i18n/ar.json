@@ -7,16 +7,23 @@
     "dashboard": "لوحة التحكم",
     "expenses": "المعاملات",
     "reports": "التقارير",
-    "summary": "الملخص"
+    "summary": "الملخص",
+    "login": "تسجيل الدخول",
+    "logout": "تسجيل الخروج"
   },
   "dashboard": {
     "title": "لوحة التحكم",
+    "totalIncome": "إجمالي الدخل",
     "totalExpenses": "إجمالي المصروفات",
     "thisMonth": "هذا الشهر",
     "monthlyBudget": "الميزانية الشهرية",
     "remaining": "المتبقي",
     "income": "الدخل",
-    "expense": "المصروف"
+    "expense": "المصروف",
+    "monthlyIncome": "دخل الشهر",
+    "monthlyExpenses": "مصروفات الشهر",
+    "monthlyNet": "صافي الشهر",
+    "totalTransactions": "إجمالي المعاملات"
   },
   "expenses": {
     "title": "المعاملات",
@@ -52,15 +59,37 @@
   "reports": {
     "title": "التقارير",
     "monthlyTrend": "الاتجاه الشهري",
-    "categoryBreakdown": "توزيع الفئات"
+    "categoryBreakdown": "توزيع الفئات",
+    "categoryDetails": "تفاصيل الفئات"
   },
   "common": {
     "loading": "جاري التحميل...",
     "save": "حفظ",
     "cancel": "إلغاء",
     "delete": "حذف",
+    "edit": "تعديل",
     "close": "إغلاق",
     "offline": "غير متصل",
-    "online": "متصل"
+    "online": "متصل",
+    "month": "الشهر",
+    "year": "السنة",
+    "date": "التاريخ",
+    "description": "الوصف",
+    "amount": "المبلغ",
+    "income": "الدخل",
+    "expense": "المصروف",
+    "transactions": "المعاملات",
+    "transactionCount": "عدد المعاملات",
+    "netBalance": "الرصيد الصافي",
+    "noTransactions": "لا توجد معاملات لـ",
+    "categories": "الفئات",
+    "noCategoryData": "لا توجد بيانات للفئات",
+    "amountHelper": "موجب للدخل، سالب للمصروفات",
+    "addTransaction": "إضافة معاملة",
+    "editTransaction": "تعديل المعاملة",
+    "noData": "لا توجد بيانات متاحة لـ",
+    "type": "النوع",
+    "actions": "الإجراءات",
+    "pleaseLogin": "يرجى تسجيل الدخول لعرض هذه الصفحة"
   }
 }
