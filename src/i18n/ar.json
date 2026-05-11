@@ -1,0 +1,66 @@
+{
+  "app": {
+    "title": "💰 المصروفات",
+    "subtitle": "تتبع نفقاتك بكفاءة"
+  },
+  "navigation": {
+    "dashboard": "لوحة التحكم",
+    "expenses": "المعاملات",
+    "reports": "التقارير",
+    "summary": "الملخص"
+  },
+  "dashboard": {
+    "title": "لوحة التحكم",
+    "totalExpenses": "إجمالي المصروفات",
+    "thisMonth": "هذا الشهر",
+    "monthlyBudget": "الميزانية الشهرية",
+    "remaining": "المتبقي",
+    "income": "الدخل",
+    "expense": "المصروف"
+  },
+  "expenses": {
+    "title": "المعاملات",
+    "addExpense": "إضافة معاملة",
+    "date": "التاريخ",
+    "description": "الوصف",
+    "amount": "المبلغ",
+    "category": "الفئة",
+    "action": "إجراء",
+    "delete": "حذف",
+    "noExpenses": "لم يتم تسجيل أي معاملات بعد. انقر على \"إضافة معاملة\" للبدء.",
+    "fillAllFields": "يرجى ملء جميع الحقول",
+    "categories": {
+      "food": "الطعام",
+      "transport": "المواصلات",
+      "entertainment": "الترفيه",
+      "utilities": "المرافق",
+      "health": "الصحة",
+      "education": "التعليم",
+      "shopping": "التسوق",
+      "income": "الدخل",
+      "other": "أخرى"
+    }
+  },
+  "summary": {
+    "title": "الملخص الشهري",
+    "month": "الشهر",
+    "income": "إجمالي الدخل",
+    "expenses": "إجمالي المصروفات",
+    "net": "الصافي",
+    "noData": "لا توجد بيانات متاحة للشهر المختار"
+  },
+  "reports": {
+    "title": "التقارير",
+    "monthlyTrend": "الاتجاه الشهري",
+    "categoryBreakdown": "توزيع الفئات"
+  },
+  "common": {
+    "loading": "جاري التحميل...",
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "delete": "حذف",
+    "close": "إغلاق",
+    "offline": "غير متصل",
+    "online": "متصل"
+  }
+}

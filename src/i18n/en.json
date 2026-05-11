@@ -1,0 +1,66 @@
+{
+  "app": {
+    "title": "💰 Expenses",
+    "subtitle": "Track your spending efficiently"
+  },
+  "navigation": {
+    "dashboard": "Dashboard",
+    "expenses": "Expenses",
+    "reports": "Reports",
+    "summary": "Summary"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "totalExpenses": "Total Expenses",
+    "thisMonth": "This Month",
+    "monthlyBudget": "Monthly Budget",
+    "remaining": "Remaining",
+    "income": "Income",
+    "expense": "Expense"
+  },
+  "expenses": {
+    "title": "Expenses",
+    "addExpense": "Add Transaction",
+    "date": "Date",
+    "description": "Description",
+    "amount": "Amount",
+    "category": "Category",
+    "action": "Action",
+    "delete": "Delete",
+    "noExpenses": "No transactions recorded yet. Click \"Add Transaction\" to get started.",
+    "fillAllFields": "Please fill in all fields",
+    "categories": {
+      "food": "Food",
+      "transport": "Transport",
+      "entertainment": "Entertainment",
+      "utilities": "Utilities",
+      "health": "Health",
+      "education": "Education",
+      "shopping": "Shopping",
+      "income": "Income",
+      "other": "Other"
+    }
+  },
+  "summary": {
+    "title": "Monthly Summary",
+    "month": "Month",
+    "income": "Total Income",
+    "expenses": "Total Expenses",
+    "net": "Net",
+    "noData": "No data available for the selected month"
+  },
+  "reports": {
+    "title": "Reports",
+    "monthlyTrend": "Monthly Trend",
+    "categoryBreakdown": "Category Breakdown"
+  },
+  "common": {
+    "loading": "Loading...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "close": "Close",
+    "offline": "Offline",
+    "online": "Online"
+  }
+}
