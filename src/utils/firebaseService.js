@@ -15,6 +15,22 @@ import { db } from '../firebase.config.js'
 // Transactions Collection (handles both income and expenses)
 const TRANSACTIONS_COLLECTION = 'transactions'
 
+const parseDateValue = (value) => {
+  if (!value) return null
+  if (value instanceof Date) return value
+  if (typeof value === 'object') {
+    if (typeof value.toDate === 'function') {
+      return value.toDate()
+    }
+    if (typeof value.seconds === 'number') {
+      return new Date(value.seconds * 1000 + Math.round((value.nanoseconds || 0) / 1e6))
+    }
+  }
+
+  const date = new Date(value)
+  return Number.isNaN(date.getTime()) ? null : date
+}
+
 export const transactionService = {
   // Add new transaction (income or expense)
   addTransaction: async (userId, transactionData) => {
@@ -36,11 +52,16 @@ export const transactionService = {
   getAllTransactions: async () => {
     try {
       const querySnapshot = await getDocs(collection(db, TRANSACTIONS_COLLECTION))
-      const transactions = querySnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }))
-      return transactions.sort((a, b) => new Date(b.date) - new Date(a.date))
+      const transactions = querySnapshot.docs.map(doc => {
+        const data = doc.data()
+        return {
+          id: doc.id,
+          ...data,
+          createdAt: parseDateValue(data.createdAt),
+          date: parseDateValue(data.date)
+        }
+      })
+      return transactions.sort((a, b) => (b.createdAt?.getTime?.() || 0) - (a.createdAt?.getTime?.() || 0))
     } catch (error) {
       console.error('Error fetching all transactions:', error)
       throw error
@@ -55,11 +76,16 @@ export const transactionService = {
           where('userId', '==', userId)
         )
       )
-      const transactions = querySnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }))
-      return transactions.sort((a, b) => new Date(b.date) - new Date(a.date))
+      const transactions = querySnapshot.docs.map(doc => {
+        const data = doc.data()
+        return {
+          id: doc.id,
+          ...data,
+          createdAt: parseDateValue(data.createdAt),
+          date: parseDateValue(data.date)
+        }
+      })
+      return transactions.sort((a, b) => (b.createdAt?.getTime?.() || 0) - (a.createdAt?.getTime?.() || 0))
     } catch (error) {
       console.error('Error fetching transactions:', error)
       throw error
@@ -161,11 +187,18 @@ export const transactionService = {
   // Get transactions for a specific month
   getMonthTransactions: async (userId, year, month) => {
     try {
-      const transactions = await transactionService.getUserTransactions(userId)
-      return transactions.filter(trans => {
-        const date = new Date(trans.date)
-        return date.getFullYear() === year && date.getMonth() === month - 1
-      })
+      const transactions = userId
+        ? await transactionService.getUserTransactions(userId)
+        : await transactionService.getAllTransactions()
+
+      return transactions
+        .filter(trans => {
+          const primaryDate = parseDateValue(trans.date)
+          const fallbackDate = parseDateValue(trans.createdAt)
+          const effectiveDate = primaryDate || fallbackDate
+          return effectiveDate && effectiveDate.getFullYear() === year && effectiveDate.getMonth() === month - 1
+        })
+        .sort((a, b) => (b.createdAt?.getTime?.() || 0) - (a.createdAt?.getTime?.() || 0))
     } catch (error) {
       console.error('Error fetching month transactions:', error)
       throw error

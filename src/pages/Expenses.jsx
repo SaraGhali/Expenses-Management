@@ -57,22 +57,7 @@ export default function Expenses() {
     )
   }
 
-  if (!user) {
-    return (
-      <Box sx={{ py: 8, textAlign: 'center' }}>
-        <Typography variant="h6" gutterBottom>
-          {t('common.pleaseLogin')}
-        </Typography>
-        <Button 
-          variant="contained" 
-          onClick={() => navigate('/login')}
-          sx={{ mt: 2 }}
-        >
-          {t('navigation.login')}
-        </Button>
-      </Box>
-    )
-  }
+ 
 
   const handleOpenDialog = (transaction = null) => {
     if (transaction) {

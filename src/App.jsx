@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import {
-  Box,
-  Container,
-  CssBaseline,
-  ThemeProvider,
-  useMediaQuery,
-  Button,
-  Typography
+    Box,
+    Container,
+    CssBaseline,
+    ThemeProvider,
+    useMediaQuery,
+    Button,
+    Typography
 } from '@mui/material'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import './App.css'
@@ -23,129 +23,114 @@ import AppNavbar from './components/layout/AppNavbar'
 import { useAuthUser } from './hooks/useAuthUser'
 
 function App() {
-  const [isOnline, setIsOnline] = useState(navigator.onLine)
-  const [language, setLanguage] = useState(i18n.getLanguage())
-  const [anchorEl, setAnchorEl] = useState(null)
-  const [navAnchorEl, setNavAnchorEl] = useState(null)
+    const [isOnline, setIsOnline] = useState(navigator.onLine)
+    const [language, setLanguage] = useState(i18n.getLanguage())
+    const [anchorEl, setAnchorEl] = useState(null)
+    const [navAnchorEl, setNavAnchorEl] = useState(null)
 
-  const { user } = useAuthUser()
-  const theme = createAppTheme(language)
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
-  const t = (key) => i18n.t(key)
-  const direction = i18n.getDirection()
+    const { user } = useAuthUser()
+    const theme = createAppTheme(language)
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
+    const t = (key) => i18n.t(key)
+    const direction = i18n.getDirection()
 
-  useEffect(() => {
-    const handleOnline = () => setIsOnline(true)
-    const handleOffline = () => setIsOnline(false)
-    const handleLanguageChange = (e) => {
-      const newLang = e.detail?.language || i18n.getLanguage()
-      setLanguage(newLang)
+    useEffect(() => {
+        const handleOnline = () => setIsOnline(true)
+        const handleOffline = () => setIsOnline(false)
+        const handleLanguageChange = (e) => {
+            const newLang = e.detail?.language || i18n.getLanguage()
+            setLanguage(newLang)
+        }
+
+        window.addEventListener('online', handleOnline)
+        window.addEventListener('offline', handleOffline)
+        window.addEventListener('languageChanged', handleLanguageChange)
+
+        return () => {
+            window.removeEventListener('online', handleOnline)
+            window.removeEventListener('offline', handleOffline)
+            window.removeEventListener('languageChanged', handleLanguageChange)
+        }
+    }, [])
+
+    useEffect(() => {
+        document.documentElement.dir = direction
+        document.documentElement.lang = language
+    }, [direction, language])
+
+    const handleChangeLanguage = (lang) => {
+        i18n.changeLanguage(lang)
+        setLanguage(lang)
     }
+    // if (!user) {
+    //     return (
+    //         <Box sx={{ py: 8 }}>
+    //             <Typography variant="h6" align="center">
+    //                 {t('common.pleaseLogin')}
+    //             </Typography>
+    //         </Box>
+    //     )
+    // }
+    return (
+        <ThemeProvider theme={theme}>
+            <CssBaseline />
+            <BrowserRouter>
+                <Box
+                    sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        minHeight: '100vh',
+                        direction: i18n.getDirection(),
+                    }}
+                >
+                    <AppHeader>
+                        <AppNavbar
+                            user={user}
+                            isOnline={isOnline}
+                            language={language}
+                            t={t}
+                            direction={direction}
+                            anchorEl={anchorEl}
+                            setAnchorEl={setAnchorEl}
+                            navAnchorEl={navAnchorEl}
+                            setNavAnchorEl={setNavAnchorEl}
+                            isMobile={isMobile}
+                            onLanguageChange={handleChangeLanguage}
+                        />
+                    </AppHeader>
 
-    window.addEventListener('online', handleOnline)
-    window.addEventListener('offline', handleOffline)
-    window.addEventListener('languageChanged', handleLanguageChange)
+                    <Container maxWidth="lg" sx={{ py: 5, flex: 1 }}>
 
-    return () => {
-      window.removeEventListener('online', handleOnline)
-      window.removeEventListener('offline', handleOffline)
-      window.removeEventListener('languageChanged', handleLanguageChange)
-    }
-  }, [])
 
-  useEffect(() => {
-    document.documentElement.dir = direction
-    document.documentElement.lang = language
-  }, [direction, language])
+                        <Routes>
+                            <Route path="/login" element={<Login />} />
+                            <Route path="/" element={<Dashboard />} />
+                            <Route path="/transactions" element={<Transactions />} />
+                            <Route path="/users" element={<Users />} />
+                            <Route path="/summary" element={<Summary />} />
+                            <Route path="/reports" element={<Reports />} />
+                        </Routes>
+                    </Container>
 
-  const handleChangeLanguage = (lang) => {
-    i18n.changeLanguage(lang)
-    setLanguage(lang)
-  }
-
-  return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <BrowserRouter>
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            minHeight: '100vh',
-            direction: i18n.getDirection(),
-          }}
-        >
-          <AppHeader>
-            <AppNavbar
-              user={user}
-              isOnline={isOnline}
-              language={language}
-              t={t}
-              direction={direction}
-              anchorEl={anchorEl}
-              setAnchorEl={setAnchorEl}
-              navAnchorEl={navAnchorEl}
-              setNavAnchorEl={setNavAnchorEl}
-              isMobile={isMobile}
-              onLanguageChange={handleChangeLanguage}
-            />
-          </AppHeader>
-
-          <Container maxWidth="lg" sx={{ py: 5, flex: 1 }}>
-            <Box
-              sx={{
-                mb: 4,
-                borderRadius: 4,
-                p: 4,
-                background: 'rgba(255,255,255,0.04)',
-                border: '1px solid rgba(255,255,255,0.08)',
-                boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.03)',
-              }}
-            >
-              <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, alignItems: 'flex-start', justifyContent: 'space-between', gap: 3 }}>
-                <Box>
-                  <Box component="span" sx={{ display: 'block', color: 'primary.light', fontWeight: 700, mb: 1 }}>
-                    Welcome to {t('app.title')}
-                  </Box>
-                  <Box component="h1" sx={{ m: 0, fontSize: '2rem', lineHeight: 1.1, fontWeight: 800 }}>
-                    {t('app.subtitle') || 'Smart expense tracking for every user.'}
-                  </Box>
+                    <Box
+                        component="footer"
+                        sx={{
+                            background: 'linear-gradient(180deg, rgba(9,18,39,0.95), rgba(9,18,39,0.98))',
+                            color: 'rgba(255,255,255,0.74)',
+                            textAlign: 'center',
+                            py: 3,
+                            mt: 'auto',
+                            borderTop: '1px solid rgba(255,255,255,0.08)',
+                        }}
+                    >
+                        <Typography variant="body2">
+                            © 2024 {t('app.title')}. {t('common.offline')}
+                        </Typography>
+                    </Box>
                 </Box>
-                <Button variant="contained" color="primary" href="/transactions" sx={{ alignSelf: 'center', mt: { xs: 2, md: 0 } }}>
-                  {t('navigation.transactions')}
-                </Button>
-              </Box>
-            </Box>
-
-            <Routes>
-              <Route path="/login" element={<Login />} />
-              <Route path="/" element={<Dashboard />} />
-              <Route path="/transactions" element={<Transactions />} />
-              <Route path="/users" element={<Users />} />
-              <Route path="/summary" element={<Summary />} />
-              <Route path="/reports" element={<Reports />} />
-            </Routes>
-          </Container>
-
-          <Box
-            component="footer"
-            sx={{
-              background: 'linear-gradient(180deg, rgba(9,18,39,0.95), rgba(9,18,39,0.98))',
-              color: 'rgba(255,255,255,0.74)',
-              textAlign: 'center',
-              py: 3,
-              mt: 'auto',
-              borderTop: '1px solid rgba(255,255,255,0.08)',
-            }}
-          >
-            <Typography variant="body2">
-              © 2024 {t('app.title')}. {t('common.offline')}
-            </Typography>
-          </Box>
-        </Box>
-      </BrowserRouter>
-    </ThemeProvider>
-  )
+            </BrowserRouter>
+        </ThemeProvider>
+    )
 }
 
 export default App

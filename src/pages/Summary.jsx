@@ -34,6 +34,7 @@ import { useAuthUser } from '../hooks/useAuthUser'
 import { useMonthlySummary } from '../hooks/useMonthlySummary'
 import { i18n } from '../i18n/i18n'
 import { TRANSACTION_CATEGORIES } from '../constants'
+import { transactionService } from '../utils/firebaseService'
 
 const months = Array.from({ length: 12 }, (_, index) =>
   new Intl.DateTimeFormat(i18n.getLanguage(), { month: 'long' }).format(new Date(2020, index, 1))
@@ -44,7 +45,7 @@ export default function Summary() {
   const { user, initializing } = useAuthUser()
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1)
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear())
-  const { summary, loading, error, refreshSummary } = useMonthlySummary(user?.uid, selectedYear, selectedMonth)
+  const { summary, loading, error, refreshSummary } = useMonthlySummary(selectedYear, selectedMonth)
 
   const [editingId, setEditingId] = useState(null)
   const [openDialog, setOpenDialog] = useState(false)
@@ -65,27 +66,10 @@ export default function Summary() {
     )
   }
 
-  if (!user) {
-    return (
-      <Box sx={{ py: 8, textAlign: 'center' }}>
-        <Typography variant="h6" gutterBottom>
-          {t('common.pleaseLogin')}
-        </Typography>
-        <Button 
-          variant="contained" 
-          onClick={() => navigate('/login')}
-          sx={{ mt: 2 }}
-        >
-          {t('navigation.login')}
-        </Button>
-      </Box>
-    )
-  }
 
   const handleDeleteTransaction = async (id) => {
     if (window.confirm(t('common.confirmDelete'))) {
       try {
-        const { transactionService } = await import('../utils/firebaseService')
         await transactionService.deleteTransaction(id)
         await refreshSummary()
       } catch (err) {
@@ -96,12 +80,16 @@ export default function Summary() {
   }
 
   const handleEditTransaction = (transaction) => {
+    const dateValue = transaction.date instanceof Date
+      ? transaction.date.toISOString().split('T')[0]
+      : String(transaction.date || new Date().toISOString()).split('T')[0]
+
     setEditingId(transaction.id)
     setFormData({
       description: transaction.description,
       amount: transaction.amount.toString(),
       category: transaction.category,
-      date: transaction.date.split('T')[0]
+      date: dateValue
     })
     setOpenDialog(true)
   }
@@ -112,20 +100,20 @@ export default function Summary() {
       return
     }
 
-    if (!user) {
-      navigate('/login')
-      return
-    }
-
     try {
-      const { transactionService } = await import('../utils/firebaseService')
       if (editingId) {
         await transactionService.updateTransaction(editingId, {
           ...formData,
           amount: parseFloat(formData.amount)
         })
         setEditingId(null)
+      } else {
+        await transactionService.addTransaction(user.uid, {
+          ...formData,
+          amount: parseFloat(formData.amount)
+        })
       }
+
       setOpenDialog(false)
       setFormData({
         description: '',
@@ -153,6 +141,32 @@ export default function Summary() {
 
   const currentYear = new Date().getFullYear()
   const years = Array.from({ length: 5 }, (_, i) => currentYear - 2 + i)
+
+  const formatTransactionDate = (transaction) => {
+    if (transaction.date) {
+      const date = new Date(transaction.date)
+      if (!Number.isNaN(date.getTime())) return date.toLocaleDateString()
+    }
+    if (transaction.createdAt) {
+      const date = new Date(transaction.createdAt)
+      if (!Number.isNaN(date.getTime())) return date.toLocaleDateString()
+    }
+    return '—'
+  }
+
+  const monthlyTotals = summary?.transactions.reduce(
+    (acc, transaction) => {
+      if (transaction.amount > 0) {
+        acc.income += transaction.amount
+      } else {
+        acc.expenses += Math.abs(transaction.amount)
+      }
+      return acc
+    },
+    { income: 0, expenses: 0 }
+  )
+
+  const monthlyNet = monthlyTotals ? monthlyTotals.income - monthlyTotals.expenses : 0
 
   return (
     <Box>
@@ -291,7 +305,7 @@ export default function Summary() {
             <TableBody>
               {summary.transactions.map(transaction => (
                 <TableRow key={transaction.id} hover>
-                  <TableCell>{new Date(transaction.date).toLocaleDateString()}</TableCell>
+                  <TableCell>{formatTransactionDate(transaction)}</TableCell>
                   <TableCell>{transaction.description}</TableCell>
                   <TableCell>{transaction.category}</TableCell>
                   <TableCell align="right">
@@ -334,6 +348,30 @@ export default function Summary() {
                   </TableCell>
                 </TableRow>
               ))}
+              <TableRow sx={{ backgroundColor: 'rgba(0,0,0,0.04)' }}>
+                <TableCell colSpan={3}>
+                  <Typography sx={{ fontWeight: 'bold' }}>{t('common.totals')}</Typography>
+                </TableCell>
+                <TableCell align="right">
+                  <Typography sx={{ fontWeight: 'bold', color: '#4caf50' }}>
+                    +${monthlyTotals?.income.toFixed(2) || '0.00'}
+                  </Typography>
+                  <Typography sx={{ fontSize: '0.85rem', color: 'text.secondary' }}>
+                    -${monthlyTotals?.expenses.toFixed(2) || '0.00'}
+                  </Typography>
+                </TableCell>
+                <TableCell align="center">
+                  <Typography sx={{ fontWeight: 'bold' }}>{t('common.netBalance')}</Typography>
+                </TableCell>
+                <TableCell align="center">
+                  <Typography sx={{
+                    fontWeight: 'bold',
+                    color: monthlyNet >= 0 ? '#4caf50' : '#f44336'
+                  }}>
+                    ${monthlyNet.toFixed(2)}
+                  </Typography>
+                </TableCell>
+              </TableRow>
             </TableBody>
           </Table>
         </TableContainer>

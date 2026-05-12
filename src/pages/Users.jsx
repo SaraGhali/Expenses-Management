@@ -36,7 +36,8 @@ import { i18n } from '../i18n/i18n'
 const defaultForm = {
   displayName: '',
   email: '',
-  role: 'User'
+  role: 'User',
+  balance: '0.00'
 }
 
 export default function Users() {
@@ -49,6 +50,25 @@ export default function Users() {
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' })
 
   const t = (key) => i18n.t(key)
+
+  const formatTimestamp = (value) => {
+    if (!value) return '—'
+    if (value instanceof Date) return value.toLocaleString()
+    if (typeof value === 'object') {
+      if (typeof value.toDate === 'function') return value.toDate().toLocaleString()
+      if (typeof value.seconds === 'number') {
+        const date = new Date(value.seconds * 1000 + Math.round((value.nanoseconds || 0) / 1e6))
+        return date.toLocaleString()
+      }
+    }
+    const date = new Date(value)
+    return Number.isNaN(date.getTime()) ? String(value) : date.toLocaleString()
+  }
+
+  const formatBalance = (value) => {
+    const amount = Number(value)
+    return Number.isFinite(amount) ? amount.toFixed(2) : '—'
+  }
 
   const fetchUsers = async () => {
     try {
@@ -78,7 +98,8 @@ export default function Users() {
     setFormData({
       displayName: user.displayName || user.name || '',
       email: user.email || '',
-      role: user.role || 'User'
+      role: user.role || 'User',
+      balance: user.balance != null ? String(user.balance) : '0.00'
     })
     setOpenDialog(true)
   }
@@ -95,12 +116,23 @@ export default function Users() {
       return
     }
 
+    const balanceValue = formData.balance === '' ? 0 : parseFloat(formData.balance)
+    if (formData.balance !== '' && Number.isNaN(balanceValue)) {
+      setSnackbar({ open: true, message: t('users.invalidBalance'), severity: 'warning' })
+      return
+    }
+
+    const payload = {
+      ...formData,
+      balance: Number.isFinite(balanceValue) ? Number(balanceValue.toFixed(2)) : 0
+    }
+
     try {
       if (editingUser) {
-        await transactionService.updateUser(editingUser.id, formData)
+        await transactionService.updateUser(editingUser.id, payload)
         setSnackbar({ open: true, message: t('users.updateSuccess'), severity: 'success' })
       } else {
-        await transactionService.addUser(formData)
+        await transactionService.addUser(payload)
         setSnackbar({ open: true, message: t('users.addSuccess'), severity: 'success' })
       }
       handleCloseDialog()
@@ -167,10 +199,10 @@ export default function Users() {
         <TableContainer component={Paper} sx={{ overflowX: 'auto', borderRadius: 3, p: 1, bgcolor: 'rgba(255,255,255,0.05)' }}>
           <Table sx={{ minWidth: 650 }}>
             <TableHead>
-              <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
+              <TableRow>
                 <TableCell>{t('users.name')}</TableCell>
                 <TableCell>{t('users.email')}</TableCell>
-                <TableCell>{t('users.role')}</TableCell>
+                <TableCell>{t('users.balance')}</TableCell>
                 <TableCell>{t('common.createdAt')}</TableCell>
                 <TableCell align="center">{t('common.actions')}</TableCell>
               </TableRow>
@@ -180,8 +212,8 @@ export default function Users() {
                 <TableRow key={user.id} hover>
                   <TableCell>{user.displayName || user.name || '—'}</TableCell>
                   <TableCell>{user.email || '—'}</TableCell>
-                  <TableCell>{user.role || t('users.defaultRole')}</TableCell>
-                  <TableCell>{user.createdAt ? new Date(user.createdAt).toLocaleString() : '—'}</TableCell>
+                  <TableCell>{formatBalance(user.balance)}</TableCell>
+                  <TableCell>{user.createdAt ? formatTimestamp(user.createdAt) : '—'}</TableCell>
                   <TableCell align="center">
                     <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1 }}>
                       <Button size="small" startIcon={<EditIcon />} onClick={() => openEditDialog(user)}>
@@ -213,6 +245,14 @@ export default function Users() {
             type="email"
             value={formData.email}
             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+            fullWidth
+          />
+          <TextField
+            label={t('users.balance')}
+            type="number"
+            inputProps={{ step: '0.01' }}
+            value={formData.balance}
+            onChange={(e) => setFormData({ ...formData, balance: e.target.value })}
             fullWidth
           />
           <FormControl fullWidth>

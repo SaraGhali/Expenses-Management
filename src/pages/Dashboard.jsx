@@ -1,39 +1,18 @@
 import DashboardIcon from '@mui/icons-material/Dashboard'
 import TrendingDownIcon from '@mui/icons-material/TrendingDown'
 import TrendingUpIcon from '@mui/icons-material/TrendingUp'
-import { Box, Card, CardContent, CircularProgress, Grid, Typography } from '@mui/material'
+import { Box, Button, Card, CardContent, CircularProgress, Grid, Typography } from '@mui/material'
+import { useNavigate } from 'react-router-dom'
 import { useAuthUser } from '../hooks/useAuthUser'
 import { useTransactions } from '../hooks/useTransactions'
 import { i18n } from '../i18n/i18n'
+import StatCard from '../components/ui/StatCard'
 
-const StatCard = ({ title, value, icon: Icon, gradient, loading }) => (
-  <Card sx={{
-    background: `linear-gradient(135deg, ${gradient[0]} 0%, ${gradient[1]} 100%)`,
-    color: 'white',
-    transition: 'transform 0.3s ease, box-shadow 0.3s ease',
-    '&:hover': {
-      transform: 'translateY(-8px)',
-      boxShadow: '0 12px 24px rgba(0,0,0,0.2)'
-    }
-  }}>
-    <CardContent>
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-        <Icon sx={{ fontSize: 40, opacity: 0.9 }} />
-        <Box sx={{ flex: 1 }}>
-          <Typography sx={{ opacity: 0.9 }} gutterBottom>
-            {title}
-          </Typography>
-          <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
-            {loading ? <CircularProgress size={20} color="inherit" /> : value}
-          </Typography>
-        </Box>
-      </Box>
-    </CardContent>
-  </Card>
-)
+
 
 export default function Dashboard() {
   const t = (key) => i18n.t(key)
+  const navigate = useNavigate()
   const { user, initializing } = useAuthUser()
   const { transactions, loading } = useTransactions(user?.uid)
 
@@ -45,15 +24,7 @@ export default function Dashboard() {
     )
   }
 
-  if (!user) {
-    return (
-      <Box sx={{ py: 8 }}>
-        <Typography variant="h6" align="center">
-          {t('common.pleaseLogin')}
-        </Typography>
-      </Box>
-    )
-  }
+ 
 
   // Calculate statistics
   const now = new Date()
@@ -102,17 +73,22 @@ export default function Dashboard() {
               {t('dashboard.welcomeMessage') || 'A beautiful and easy way to track expenses, incomes, and monthly goals.'}
             </Typography>
           </Box>
-          <Card sx={{ background: 'rgba(255,255,255,0.08)', p: 3, minWidth: 240 }}>
-            <CardContent>
-              <Typography sx={{ color: 'text.secondary', mb: 1 }}>Transactions</Typography>
-              <Typography variant="h4" sx={{ fontWeight: 800 }}>
-                {transactions.length}
-              </Typography>
-              <Typography sx={{ mt: 1, color: 'text.secondary' }}>
-                {t('dashboard.totalTransactions') || 'Total recorded transactions'}
-              </Typography>
-            </CardContent>
-          </Card>
+          <Box sx={{ display: 'grid', gap: 2, width: '100%', maxWidth: 280 }}>
+            <Card sx={{ background: 'rgba(255,255,255,0.08)', p: 3, minWidth: 240 }}>
+              <CardContent>
+                <Typography sx={{ color: 'text.secondary', mb: 1 }}>Transactions</Typography>
+                <Typography variant="h4" sx={{ fontWeight: 800 }}>
+                  {transactions.length}
+                </Typography>
+                <Typography sx={{ mt: 1, color: 'text.secondary' }}>
+                  {t('dashboard.totalTransactions') || 'Total recorded transactions'}
+                </Typography>
+              </CardContent>
+            </Card>
+            <Button variant="contained" onClick={() => navigate('/transactions')}>
+              {t('common.addTransaction')}
+            </Button>
+          </Box>
         </Box>
       </Box>
 

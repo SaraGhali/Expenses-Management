@@ -1,13 +1,13 @@
 import { useEffect, useState, useCallback } from 'react'
 import { transactionService } from '../utils/firebaseService'
 
-export function useMonthlySummary(userId, year, month) {
+export function useMonthlySummary(year, month) {
   const [summary, setSummary] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
   const fetchSummary = useCallback(async () => {
-    if (!userId || !year || !month) {
+    if (!year || !month) {
       setSummary(null)
       setLoading(false)
       return
@@ -16,7 +16,7 @@ export function useMonthlySummary(userId, year, month) {
     try {
       setLoading(true)
       setError(null)
-      const data = await transactionService.getMonthlySummary(userId, year, month)
+      const data = await transactionService.getMonthlySummary(year, month)
       setSummary(data)
     } catch (err) {
       console.error('Error fetching monthly summary:', err)
@@ -24,7 +24,7 @@ export function useMonthlySummary(userId, year, month) {
     } finally {
       setLoading(false)
     }
-  }, [userId, year, month])
+  }, [year, month])
 
   useEffect(() => {
     fetchSummary()

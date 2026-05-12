@@ -125,6 +125,28 @@ export default function AppNavbar({
           {currentLang.toUpperCase()}
         </Button>
 
+        {user && (
+          <Button
+            color="inherit"
+            variant="outlined"
+            onClick={handleLogout}
+            sx={{ whiteSpace: 'nowrap', fontSize: '0.85rem' }}
+          >
+            {t('navigation.logout')}
+          </Button>
+        )}
+         {!user && (
+          <Button
+            color="inherit"
+            variant="outlined"
+            onClick={() => navigate('/login')}
+
+            sx={{ whiteSpace: 'nowrap', fontSize: '0.85rem' }}
+          >
+            {t('navigation.login')}
+          </Button>
+        )}
+
         {!isOnline && (
           <Chip
             icon={<SignalCellularNullIcon />}
@@ -174,6 +196,19 @@ export default function AppNavbar({
             {t(item.labelKey)}
           </MenuItem>
         ))}
+        {user && (
+          <MenuItem
+            onClick={() => {
+              setNavAnchorEl(null)
+              handleLogout()
+            }}
+            sx={{
+              gap: 1,
+            }}
+          >
+            {t('navigation.logout')}
+          </MenuItem>
+        )}
       </Menu>
     </Box>
   )

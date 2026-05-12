@@ -23,15 +23,7 @@ export default function Reports() {
     )
   }
 
-  if (!user) {
-    return (
-      <Box sx={{ py: 8, textAlign: 'center' }}>
-        <Typography variant="h6" gutterBottom>
-          {t('common.pleaseLogin')}
-        </Typography>
-      </Box>
-    )
-  }
+
 
   if (error) {
     return (
