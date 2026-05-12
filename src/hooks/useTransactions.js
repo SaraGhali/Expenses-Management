@@ -8,17 +8,11 @@ export function useTransactions(userId) {
     const [error, setError] = useState(null);
 
     const fetchData = useCallback(async () => {
-        // Only run if userId is a valid string
-        if (!userId || typeof userId !== 'string') {
-            setTransactions([]);
-            setLoading(false);
-            return;
-        }
-
         try {
             setLoading(true);
+            // Fetch ALL transactions regardless of userId
             const [data, users] = await Promise.all([
-                transactionService.getUserTransactions(userId),
+                transactionService.getAllTransactions(),
                 transactionService.getAllUsers()
             ]);
 
@@ -33,7 +27,7 @@ export function useTransactions(userId) {
         } finally {
             setLoading(false);
         }
-    }, [userId]); // userId is a string (stable), so no loop here
+    }, []); // No dependencies - fetch all transactions always
 
     useEffect(() => {
         fetchData();

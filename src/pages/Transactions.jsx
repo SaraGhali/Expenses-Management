@@ -2,6 +2,7 @@ import React, { useState, useCallback } from 'react';
 import { Box, Typography, Button, CircularProgress, Alert } from '@mui/material';
 import { useAuthUser } from '../hooks/useAuthUser';
 import { useTransactions } from '../hooks/useTransactions';
+import { transactionService } from '../utils/firebaseService';
 import { i18n } from '../i18n/i18n';
 
 // Import sub-components from separate files
@@ -25,11 +26,31 @@ export default function Transactions() {
 
     const handleSave = useCallback(async (data) => {
         try {
-            // Call your service directly or add an addMethod to the hook
+            if (!user) {
+                alert('You must be logged in to add a transaction');
+                return;
+            }
+            
+            // Save transaction to Firebase
+            await transactionService.addTransaction(user.uid, data);
+            
             setOpenDialog(false);
             await refresh(); // Refresh the list after save
         } catch (err) {
-            console.error(err);
+            console.error('Error saving transaction:', err);
+            alert('Error saving transaction: ' + err.message);
+        }
+    }, [user, refresh]);
+
+    const handleDelete = useCallback(async (id) => {
+        if (window.confirm('Are you sure you want to delete this transaction?')) {
+            try {
+                await transactionService.deleteTransaction(id);
+                await refresh();
+            } catch (err) {
+                console.error('Error deleting transaction:', err);
+                alert('Error deleting transaction: ' + err.message);
+            }
         }
     }, [refresh]);
 
@@ -49,6 +70,7 @@ export default function Transactions() {
             <TransactionTable 
                 transactions={transactions} 
                 usersMap={usersMap} 
+                onDelete={handleDelete}
                 t={t} 
             />
 

@@ -12,7 +12,6 @@ import {
 } from 'firebase/firestore'
 import { db } from '../firebase.config.js'
 
-// Transactions Collection (handles both income and expenses)
 const TRANSACTIONS_COLLECTION = 'transactions'
 
 const parseDateValue = (value) => {
@@ -26,13 +25,12 @@ const parseDateValue = (value) => {
       return new Date(value.seconds * 1000 + Math.round((value.nanoseconds || 0) / 1e6))
     }
   }
-
   const date = new Date(value)
   return Number.isNaN(date.getTime()) ? null : date
 }
 
 export const transactionService = {
-  // Add new transaction (income or expense)
+  // Add new transaction
   addTransaction: async (userId, transactionData) => {
     try {
       const docRef = await addDoc(collection(db, TRANSACTIONS_COLLECTION), {
@@ -48,7 +46,8 @@ export const transactionService = {
       throw error
     }
   },
-  // Get all transactions 
+
+  // UPDATED: Get ALL transactions for ALL users
   getAllTransactions: async () => {
     try {
       const querySnapshot = await getDocs(collection(db, TRANSACTIONS_COLLECTION))
@@ -61,91 +60,41 @@ export const transactionService = {
           date: parseDateValue(data.date)
         }
       })
+      // Sort by creation date descending
       return transactions.sort((a, b) => (b.createdAt?.getTime?.() || 0) - (a.createdAt?.getTime?.() || 0))
     } catch (error) {
       console.error('Error fetching all transactions:', error)
       throw error
     }
   },
-  // Get all transactions for a user
+
+  // Keep for specific use cases (e.g., Profile page)
   getUserTransactions: async (userId) => {
     try {
       const querySnapshot = await getDocs(
-        query(
-          collection(db, TRANSACTIONS_COLLECTION),
-          where('userId', '==', userId)
-        )
+        query(collection(db, TRANSACTIONS_COLLECTION), where('userId', '==', userId))
       )
-      const transactions = querySnapshot.docs.map(doc => {
-        const data = doc.data()
-        return {
-          id: doc.id,
-          ...data,
-          createdAt: parseDateValue(data.createdAt),
-          date: parseDateValue(data.date)
-        }
-      })
-      return transactions.sort((a, b) => (b.createdAt?.getTime?.() || 0) - (a.createdAt?.getTime?.() || 0))
+      return querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+        createdAt: parseDateValue(doc.data().createdAt)
+      }))
     } catch (error) {
       console.error('Error fetching transactions:', error)
       throw error
     }
   },
 
-  // Get all registered users from Firestore users collection
   getAllUsers: async () => {
     try {
-      const usersRef = collection(db, 'users')
-      const querySnapshot = await getDocs(usersRef)
-      const users = querySnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }))
-      return users.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+      const querySnapshot = await getDocs(collection(db, 'users'))
+      return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
     } catch (error) {
       console.error('Error fetching users:', error)
       throw error
     }
   },
 
-  addUser: async (userData) => {
-    try {
-      const timestamp = new Date().toISOString()
-      const docRef = await addDoc(collection(db, 'users'), {
-        ...userData,
-        createdAt: timestamp,
-        updatedAt: timestamp
-      })
-      return { id: docRef.id, ...userData, createdAt: timestamp, updatedAt: timestamp }
-    } catch (error) {
-      console.error('Error adding user:', error)
-      throw error
-    }
-  },
-
-  updateUser: async (userId, updates) => {
-    try {
-      const userRef = doc(db, 'users', userId)
-      await updateDoc(userRef, {
-        ...updates,
-        updatedAt: new Date().toISOString()
-      })
-    } catch (error) {
-      console.error('Error updating user:', error)
-      throw error
-    }
-  },
-
-  deleteUser: async (userId) => {
-    try {
-      await deleteDoc(doc(db, 'users', userId))
-    } catch (error) {
-      console.error('Error deleting user:', error)
-      throw error
-    }
-  },
-
-  // Update transaction
   updateTransaction: async (transactionId, updates) => {
     try {
       const transactionRef = doc(db, TRANSACTIONS_COLLECTION, transactionId)
@@ -160,7 +109,6 @@ export const transactionService = {
     }
   },
 
-  // Delete transaction
   deleteTransaction: async (transactionId) => {
     try {
       await deleteDoc(doc(db, TRANSACTIONS_COLLECTION, transactionId))
@@ -170,103 +118,37 @@ export const transactionService = {
     }
   },
 
-  // Get transaction by ID
-  getTransaction: async (transactionId) => {
-    try {
-      const docSnap = await getDoc(doc(db, TRANSACTIONS_COLLECTION, transactionId))
-      if (docSnap.exists()) {
-        return { id: docSnap.id, ...docSnap.data() }
-      }
-      return null
-    } catch (error) {
-      console.error('Error fetching transaction:', error)
-      throw error
-    }
-  },
-
-  // Get transactions for a specific month
-  getMonthTransactions: async (userId, year, month) => {
-    try {
-      const transactions = userId
-        ? await transactionService.getUserTransactions(userId)
-        : await transactionService.getAllTransactions()
-
-      return transactions
-        .filter(trans => {
-          const primaryDate = parseDateValue(trans.date)
-          const fallbackDate = parseDateValue(trans.createdAt)
-          const effectiveDate = primaryDate || fallbackDate
-          return effectiveDate && effectiveDate.getFullYear() === year && effectiveDate.getMonth() === month - 1
-        })
-        .sort((a, b) => (b.createdAt?.getTime?.() || 0) - (a.createdAt?.getTime?.() || 0))
-    } catch (error) {
-      console.error('Error fetching month transactions:', error)
-      throw error
-    }
-  },
-
-  // Get monthly summary (income vs expenses)
+  // UPDATED: Get summary based on ALL transactions for ALL users
   getMonthlySummary: async (userId, year, month) => {
     try {
-      const transactions = await transactionService.getMonthTransactions(userId, year, month)
+      // Fetch all transactions regardless of userId
+      const allTransactions = await transactionService.getAllTransactions()
       
+      const filtered = allTransactions.filter(trans => {
+        // Parse date from either 'date' or 'createdAt' field
+        const transDate = trans.date instanceof Date ? trans.date : (trans.createdAt instanceof Date ? trans.createdAt : null)
+        
+        if (!transDate) return false
+        
+        const y = transDate.getFullYear()
+        const m = transDate.getMonth()
+        
+        return y === year && m === month - 1
+      })
+
       let income = 0
       let expenses = 0
-
-      transactions.forEach(trans => {
-        if (trans.amount > 0) {
-          income += trans.amount
-        } else {
-          expenses += Math.abs(trans.amount)
-        }
+      filtered.forEach(trans => {
+        const amt = parseFloat(trans.amount) || 0
+        amt > 0 ? (income += amt) : (expenses += Math.abs(amt))
       })
 
-      return {
-        income,
-        expenses,
-        net: income - expenses,
-        transactions
-      }
+      return { income, expenses, net: income - expenses, transactions: filtered }
     } catch (error) {
-      console.error('Error getting monthly summary:', error)
-      throw error
-    }
-  },
-
-  // Get yearly summary
-  getYearlySummary: async (userId, year) => {
-    try {
-      const transactions = await transactionService.getUserTransactions(userId)
-      const yearTransactions = transactions.filter(trans => {
-        const date = new Date(trans.date)
-        return date.getFullYear() === year
-      })
-
-      const monthlyData = {}
-
-      yearTransactions.forEach(transaction => {
-        const date = new Date(transaction.date)
-        const monthKey = date.toLocaleString('default', { month: 'long', year: 'numeric' })
-
-        if (!monthlyData[monthKey]) {
-          monthlyData[monthKey] = { income: 0, expenses: 0, net: 0 }
-        }
-
-        if (transaction.amount > 0) {
-          monthlyData[monthKey].income += transaction.amount
-        } else {
-          monthlyData[monthKey].expenses += Math.abs(transaction.amount)
-        }
-        monthlyData[monthKey].net = monthlyData[monthKey].income - monthlyData[monthKey].expenses
-      })
-
-      return { monthlyData, transactions: yearTransactions }
-    } catch (error) {
-      console.error('Error getting yearly summary:', error)
+      console.error('Error getting summary:', error)
       throw error
     }
   }
 }
 
-// Backward compatibility export
 export const expenseService = transactionService

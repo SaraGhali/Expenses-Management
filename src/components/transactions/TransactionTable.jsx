@@ -15,6 +15,7 @@ export const TransactionTable = React.memo(({ transactions, usersMap, onDelete, 
                 <TableHead>
                     <TableRow>
                         <TableCell>{t('common.user')}</TableCell>
+                        {/* <TableCell>{t('common.date')}</TableCell> */}
                         <TableCell align="right">{t('common.amount')}</TableCell>
                         <TableCell align="center">{t('common.actions')}</TableCell>
                     </TableRow>
@@ -23,6 +24,7 @@ export const TransactionTable = React.memo(({ transactions, usersMap, onDelete, 
                     {transactions.map((item) => (
                         <TableRow key={item.id}>
                             <TableCell>{getUserName(item)}</TableCell>
+                            {/* <TableCell>{item.createdAt? item.createdAt : '--'}</TableCell> */}
                             <TableCell align="right" sx={{ color: item.amount > 0 ? 'green' : 'red' }}>
                                 {item.amount}
                             </TableCell>
