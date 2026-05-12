@@ -1,3 +1,27 @@
 /* App-specific styles */
 
-/* Add any custom styles here */
+html, body, #root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: 'Cairo', sans-serif;
+  background: radial-gradient(circle at top left, rgba(102,126,234,0.24), transparent 28%),
+    radial-gradient(circle at bottom right, rgba(118,75,162,0.18), transparent 28%),
+    linear-gradient(180deg, #07101f 0%, #0f1c36 100%);
+  color: #e8eefc;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+::selection {
+  background: rgba(102,126,234,0.35);
+}

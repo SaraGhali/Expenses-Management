@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { transactionService } from '../utils/firebaseService'
 
 export function useTransactions(userId) {
@@ -6,9 +6,10 @@ export function useTransactions(userId) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
-  const fetchTransactions = async () => {
+  const fetchTransactions = useCallback(async () => {
     if (!userId) {
       setTransactions([])
+      setError(null)
       setLoading(false)
       return
     }
@@ -20,15 +21,26 @@ export function useTransactions(userId) {
       setTransactions(data || [])
     } catch (err) {
       console.error('Error fetching transactions:', err)
-      setError(err.message || 'Failed to load transactions')
+      setError(err?.message || 'Failed to load transactions')
     } finally {
       setLoading(false)
     }
-  }
+  }, [userId])
 
   useEffect(() => {
-    fetchTransactions()
-  }, [userId])
+    let active = true
+
+    const load = async () => {
+      if (!active) return
+      await fetchTransactions()
+    }
+
+    load()
+
+    return () => {
+      active = false
+    }
+  }, [fetchTransactions])
 
   const addTransaction = async (transactionData) => {
     if (!userId) throw new Error('User not authenticated')
@@ -36,7 +48,7 @@ export function useTransactions(userId) {
       await transactionService.addTransaction(userId, transactionData)
       await fetchTransactions()
     } catch (err) {
-      setError(err.message || 'Failed to add transaction')
+      setError(err?.message || 'Failed to add transaction')
       throw err
     }
   }
@@ -46,7 +58,7 @@ export function useTransactions(userId) {
       await transactionService.deleteTransaction(id)
       await fetchTransactions()
     } catch (err) {
-      setError(err.message || 'Failed to delete transaction')
+      setError(err?.message || 'Failed to delete transaction')
       throw err
     }
   }
@@ -56,7 +68,7 @@ export function useTransactions(userId) {
       await transactionService.updateTransaction(id, data)
       await fetchTransactions()
     } catch (err) {
-      setError(err.message || 'Failed to update transaction')
+      setError(err?.message || 'Failed to update transaction')
       throw err
     }
   }
@@ -72,6 +84,7 @@ export function useTransactions(userId) {
     addTransaction,
     deleteTransaction,
     updateTransaction,
-    refreshTransactions
+    refreshTransactions,
   }
 }
+

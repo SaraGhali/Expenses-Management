@@ -12,10 +12,12 @@ import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { authService } from '../utils/authService'
 import { useAuthUser } from '../hooks/useAuthUser'
+import { i18n } from '../i18n/i18n'
 
 export default function Login() {
   const navigate = useNavigate()
   const { user, initializing } = useAuthUser()
+  const t = (key) => i18n.t(key)
 
   const [mode, setMode] = useState('login') // 'login' | 'signup'
   const [displayName, setDisplayName] = useState('')
@@ -55,7 +57,7 @@ export default function Login() {
       }
       navigate('/', { replace: true })
     } catch (err) {
-      setError(err?.message || 'Authentication failed')
+      setError(err?.message || t('login.error'))
     } finally {
       setLoading(false)
     }
@@ -65,7 +67,7 @@ export default function Login() {
     <Container maxWidth="sm" sx={{ py: 4 }}>
       <Paper sx={{ p: 4 }}>
         <Typography variant="h4" gutterBottom>
-          {mode === 'signup' ? 'Create account' : 'Login'}
+          {mode === 'signup' ? t('login.title.signup') : t('login.title.login')}
         </Typography>
 
         {error && (
@@ -77,15 +79,15 @@ export default function Login() {
         <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
           {mode === 'signup' && (
             <TextField
-              label="Display name"
+              label={t('login.displayName')}
               value={displayName}
               onChange={(e) => setDisplayName(e.target.value)}
               required
             />
           )}
-          <TextField label="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+          <TextField label={t('login.email')} value={email} onChange={(e) => setEmail(e.target.value)} required />
           <TextField
-            label="Password"
+            label={t('login.password')}
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -94,7 +96,7 @@ export default function Login() {
 
           <Button type="submit" variant="contained" disabled={!canSubmit || loading}>
             {loading ? <CircularProgress size={20} sx={{ color: 'white', mr: 1 }} /> : null}
-            {mode === 'signup' ? 'Sign up' : 'Sign in'}
+            {mode === 'signup' ? t('login.action.signup') : t('login.action.signin')}
           </Button>
 
           <Button
@@ -104,7 +106,7 @@ export default function Login() {
               setMode((m) => (m === 'signup' ? 'login' : 'signup'))
             }}
           >
-            {mode === 'signup' ? 'I already have an account' : 'Create an account'}
+            {mode === 'signup' ? t('login.switch.toLogin') : t('login.switch.toSignup')}
           </Button>
         </Box>
       </Paper>

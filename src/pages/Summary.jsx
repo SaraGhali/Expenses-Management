@@ -35,10 +35,9 @@ import { useMonthlySummary } from '../hooks/useMonthlySummary'
 import { i18n } from '../i18n/i18n'
 import { TRANSACTION_CATEGORIES } from '../constants'
 
-const months = [
-  'January', 'February', 'March', 'April', 'May', 'June',
-  'July', 'August', 'September', 'October', 'November', 'December'
-]
+const months = Array.from({ length: 12 }, (_, index) =>
+  new Intl.DateTimeFormat(i18n.getLanguage(), { month: 'long' }).format(new Date(2020, index, 1))
+)
 
 export default function Summary() {
   const navigate = useNavigate()
@@ -70,29 +69,28 @@ export default function Summary() {
     return (
       <Box sx={{ py: 8, textAlign: 'center' }}>
         <Typography variant="h6" gutterBottom>
-          Please login to view summary
+          {t('common.pleaseLogin')}
         </Typography>
         <Button 
           variant="contained" 
           onClick={() => navigate('/login')}
           sx={{ mt: 2 }}
         >
-          Go to Login
+          {t('navigation.login')}
         </Button>
       </Box>
     )
   }
 
   const handleDeleteTransaction = async (id) => {
-    if (window.confirm('Are you sure you want to delete this transaction?')) {
+    if (window.confirm(t('common.confirmDelete'))) {
       try {
-        // Import here to avoid circular dependency
         const { transactionService } = await import('../utils/firebaseService')
         await transactionService.deleteTransaction(id)
         await refreshSummary()
       } catch (err) {
         console.error('Error deleting transaction:', err)
-        alert(err.message || 'Error deleting transaction')
+        alert(err.message || t('common.errorDeleting'))
       }
     }
   }
@@ -110,7 +108,7 @@ export default function Summary() {
 
   const handleSaveTransaction = async () => {
     if (!formData.description || !formData.amount) {
-      alert('Please fill in all fields')
+      alert(t('expenses.fillAllFields'))
       return
     }
 
@@ -138,7 +136,7 @@ export default function Summary() {
       await refreshSummary()
     } catch (error) {
       console.error('Error saving transaction:', error)
-      alert(error.message || 'Error saving transaction')
+      alert(error.message || t('common.errorSaving'))
     }
   }
 
@@ -158,11 +156,50 @@ export default function Summary() {
 
   return (
     <Box>
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 4 }}>
-        <HistoryIcon sx={{ fontSize: 40, color: 'primary.main' }} />
-        <Typography variant="h3" component="h1">
-          {t('navigation.summary')}
-        </Typography>
+      <Box sx={{ mb: 4, p: 4, borderRadius: 4, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 30px 70px rgba(0,0,0,0.18)' }}>
+        <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, justifyContent: 'space-between', gap: 3 }}>
+          <Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+              <HistoryIcon sx={{ fontSize: 42, color: 'primary.main' }} />
+              <Typography variant="h3" component="h1" sx={{ fontWeight: 800 }}>
+                {t('navigation.summary')}
+              </Typography>
+            </Box>
+            <Typography sx={{ color: 'text.secondary', maxWidth: 700 }}>
+              {t('summary.description') || 'Track monthly income, expenses and your overall balance in one elegant view.'}
+            </Typography>
+          </Box>
+          <Box sx={{ display: 'grid', gap: 2, width: '100%', maxWidth: 320 }}>
+            <FormControl fullWidth>
+              <InputLabel>{t('common.month')}</InputLabel>
+              <Select
+                value={selectedMonth}
+                label={t('common.month')}
+                onChange={(e) => setSelectedMonth(e.target.value)}
+              >
+                {months.map((month, index) => (
+                  <MenuItem key={index} value={index + 1}>
+                    {month}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <FormControl fullWidth>
+              <InputLabel>{t('common.year')}</InputLabel>
+              <Select
+                value={selectedYear}
+                label={t('common.year')}
+                onChange={(e) => setSelectedYear(e.target.value)}
+              >
+                {years.map(year => (
+                  <MenuItem key={year} value={year}>
+                    {year}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Box>
+        </Box>
       </Box>
 
       {error && (
@@ -170,39 +207,6 @@ export default function Summary() {
           {error}
         </Alert>
       )}
-
-      {/* Filters */}
-      <Box sx={{ mb: 4, display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-        <FormControl sx={{ minWidth: 150 }}>
-          <InputLabel>{t('common.month')}</InputLabel>
-          <Select
-            value={selectedMonth}
-            label={t('common.month')}
-            onChange={(e) => setSelectedMonth(e.target.value)}
-          >
-            {months.map((month, index) => (
-              <MenuItem key={index} value={index + 1}>
-                {month}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-
-        <FormControl sx={{ minWidth: 150 }}>
-          <InputLabel>{t('common.year')}</InputLabel>
-          <Select
-            value={selectedYear}
-            label={t('common.year')}
-            onChange={(e) => setSelectedYear(e.target.value)}
-          >
-            {years.map(year => (
-              <MenuItem key={year} value={year}>
-                {year}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-      </Box>
 
       {/* Summary Cards */}
       {summary && (

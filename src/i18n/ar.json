@@ -6,6 +6,8 @@
   "navigation": {
     "dashboard": "لوحة التحكم",
     "expenses": "المعاملات",
+    "transactions": "جميع المعاملات",
+    "users": "المستخدمون",
     "reports": "التقارير",
     "summary": "الملخص",
     "login": "تسجيل الدخول",
@@ -23,7 +25,10 @@
     "monthlyIncome": "دخل الشهر",
     "monthlyExpenses": "مصروفات الشهر",
     "monthlyNet": "صافي الشهر",
-    "totalTransactions": "إجمالي المعاملات"
+    "totalTransactions": "إجمالي المعاملات",
+    "welcomeMessage": "طريقة جميلة وسهلة لتتبع المصروفات والإيرادات والأهداف الشهرية.",
+    "netBalanceDescription": "رصيدك المتبقي لهذا الشهر.",
+    "transactionSummary": "نظرة عامة على نشاطك الإجمالي حتى الآن."
   },
   "expenses": {
     "title": "المعاملات",
@@ -34,6 +39,10 @@
     "category": "الفئة",
     "action": "إجراء",
     "delete": "حذف",
+    "descriptionText": "أضف، حرر، واستعرض دخلك ومصروفاتك في مكان واحد.",
+    "type": "النوع",
+    "income": "الدخل",
+    "expense": "المصروف",
     "noExpenses": "لم يتم تسجيل أي معاملات بعد. انقر على \"إضافة معاملة\" للبدء.",
     "fillAllFields": "يرجى ملء جميع الحقول",
     "categories": {
@@ -48,7 +57,36 @@
       "other": "أخرى"
     }
   },
+  "transactions": {
+    "description": "نظرة عامة على جميع معاملات المستخدمين، مع الدخل والمصروفات والصافي في مكان واحد.",
+    "totalTransactions": "إجمالي المعاملات",
+    "noTransactions": "لم يتم العثور على معاملات.",
+    "deleteConfirmation": "هل تريد بالتأكيد حذف هذه المعاملة؟",
+    "deleteSuccess": "تم حذف المعاملة بنجاح",
+    "deleteError": "فشل في حذف المعاملة",
+    "loadError": "تعذر تحميل المعاملات",
+    "createdAt": "تاريخ الإنشاء"
+  },
+  "login": {
+    "title": {
+      "login": "تسجيل الدخول",
+      "signup": "إنشاء حساب"
+    },
+    "displayName": "الاسم الظاهر",
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "action": {
+      "signin": "تسجيل الدخول",
+      "signup": "إنشاء الحساب"
+    },
+    "switch": {
+      "toLogin": "لدي حساب بالفعل",
+      "toSignup": "إنشاء حساب"
+    },
+    "error": "فشل المصادقة"
+  },
   "summary": {
+    "description": "تتبع الدخل والمصروفات الشهرية والرصيد العام في عرض أنيق واحد.",
     "title": "الملخص الشهري",
     "month": "الشهر",
     "income": "إجمالي الدخل",
@@ -62,11 +100,34 @@
     "categoryBreakdown": "توزيع الفئات",
     "categoryDetails": "تفاصيل الفئات"
   },
+  "users": {
+    "title": "المستخدمون",
+    "totalUsers": "إجمالي المستخدمين",
+    "noUsers": "لم يتم العثور على مستخدمين.",
+    "loadError": "تعذر تحميل المستخدمين",
+    "defaultRole": "مستخدم",
+    "name": "الاسم",
+    "email": "البريد الإلكتروني",
+    "role": "الدور",
+    "description": "إدارة المستخدمين المسجلين وأدوارهم.",
+    "addUser": "إضافة مستخدم",
+    "editUser": "تعديل المستخدم",
+    "fillAllFields": "يرجى ملء جميع الحقول",
+    "addSuccess": "تمت إضافة المستخدم بنجاح",
+    "updateSuccess": "تم تحديث المستخدم بنجاح",
+    "deleteSuccess": "تم حذف المستخدم بنجاح",
+    "deleteError": "فشل في حذف المستخدم",
+    "saveError": "فشل في حفظ المستخدم",
+    "deleteConfirmation": "هل تريد بالتأكيد حذف هذا المستخدم؟"
+  },
   "common": {
     "loading": "جاري التحميل...",
     "save": "حفظ",
     "cancel": "إلغاء",
     "delete": "حذف",
+    "edit": "تعديل",
+    "close": "إغلاق",
+    "createdAt": "تاريخ الإنشاء",
     "edit": "تعديل",
     "close": "إغلاق",
     "offline": "غير متصل",
@@ -84,12 +145,19 @@
     "noTransactions": "لا توجد معاملات لـ",
     "categories": "الفئات",
     "noCategoryData": "لا توجد بيانات للفئات",
+    "actions": "الإجراءات",
+    "createdAt": "تاريخ الإنشاء",
     "amountHelper": "موجب للدخل، سالب للمصروفات",
     "addTransaction": "إضافة معاملة",
     "editTransaction": "تعديل المعاملة",
+    "confirmDelete": "هل تريد بالتأكيد حذف هذه المعاملة؟",
+    "errorDeleting": "فشل في حذف المعاملة",
+    "errorSaving": "حدث خطأ أثناء حفظ المعاملة",
     "noData": "لا توجد بيانات متاحة لـ",
     "type": "النوع",
     "actions": "الإجراءات",
-    "pleaseLogin": "يرجى تسجيل الدخول لعرض هذه الصفحة"
+    "pleaseLogin": "يرجى تسجيل الدخول لعرض هذه الصفحة",
+    "user": "المستخدم",
+    "role": "الدور"
   }
 }

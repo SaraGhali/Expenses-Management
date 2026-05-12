@@ -61,14 +61,14 @@ export default function Expenses() {
     return (
       <Box sx={{ py: 8, textAlign: 'center' }}>
         <Typography variant="h6" gutterBottom>
-          Please login to manage transactions
+          {t('common.pleaseLogin')}
         </Typography>
         <Button 
           variant="contained" 
           onClick={() => navigate('/login')}
           sx={{ mt: 2 }}
         >
-          Go to Login
+          {t('navigation.login')}
         </Button>
       </Box>
     )
@@ -116,37 +116,65 @@ export default function Expenses() {
       setOpenDialog(false)
     } catch (err) {
       console.error('Error saving transaction:', err)
-      alert(err.message || 'Error saving transaction')
+      alert(err.message || t('common.errorSaving'))
     }
   }
 
   const handleDeleteTransaction = async (id) => {
-    if (window.confirm('Are you sure you want to delete this transaction?')) {
+    if (window.confirm(t('common.confirmDelete'))) {
       try {
         await deleteTransaction(id)
       } catch (err) {
         console.error('Error deleting transaction:', err)
-        alert(err.message || 'Error deleting transaction')
+        alert(err.message || t('common.errorDeleting'))
       }
     }
   }
 
+  const totalIncome = transactions.reduce((sum, transaction) => sum + (transaction.amount > 0 ? transaction.amount : 0), 0)
+  const totalExpenses = transactions.reduce((sum, transaction) => sum + (transaction.amount < 0 ? Math.abs(transaction.amount) : 0), 0)
+  const currentBalance = totalIncome - totalExpenses
+
   return (
     <Box>
-      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 2, mb: 4 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <TrendingUpIcon sx={{ fontSize: 40, color: 'primary.main' }} />
-          <Typography variant="h3" component="h1">
-            {t('expenses.title')}
+      <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, alignItems: 'flex-start', justifyContent: 'space-between', gap: 3, mb: 4 }}>
+        <Box>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+            <TrendingUpIcon sx={{ fontSize: 42, color: 'primary.main' }} />
+            <Typography variant="h3" component="h1" sx={{ fontWeight: 800 }}>
+              {t('expenses.title')}
+            </Typography>
+          </Box>
+          <Typography sx={{ color: 'text.secondary', maxWidth: 700 }}>
+            {t('expenses.descriptionText') || 'Add, edit, and review your incomes and expenses in one place.'}
           </Typography>
         </Box>
-        <Button 
-          variant="contained" 
+
+        <Button
+          variant="contained"
           startIcon={<AddIcon />}
           onClick={() => handleOpenDialog()}
+          sx={{ alignSelf: 'center' }}
         >
           {t('expenses.addExpense')}
         </Button>
+      </Box>
+
+      <Box sx={{ display: 'grid', gap: 2, gridTemplateColumns: { xs: '1fr', md: '1fr 1fr 1fr' }, mb: 4 }}>
+        <Paper sx={{ p: 3, bgcolor: 'rgba(255,255,255,0.05)', borderRadius: 3 }}>
+          <Typography sx={{ color: 'text.secondary', mb: 1 }}>Income</Typography>
+          <Typography variant="h4" sx={{ fontWeight: 800 }}>+${totalIncome.toFixed(2)}</Typography>
+        </Paper>
+        <Paper sx={{ p: 3, bgcolor: 'rgba(255,255,255,0.05)', borderRadius: 3 }}>
+          <Typography sx={{ color: 'text.secondary', mb: 1 }}>Expenses</Typography>
+          <Typography variant="h4" sx={{ fontWeight: 800 }}>-${totalExpenses.toFixed(2)}</Typography>
+        </Paper>
+        <Paper sx={{ p: 3, bgcolor: 'rgba(255,255,255,0.05)', borderRadius: 3 }}>
+          <Typography sx={{ color: 'text.secondary', mb: 1 }}>Balance</Typography>
+          <Typography variant="h4" sx={{ fontWeight: 800, color: currentBalance >= 0 ? 'success.main' : 'error.main' }}>
+            ${currentBalance.toFixed(2)}
+          </Typography>
+        </Paper>
       </Box>
 
       {error && (
@@ -156,19 +184,19 @@ export default function Expenses() {
       )}
 
       {transactions.length === 0 ? (
-        <Alert severity="info">
+        <Alert severity="info" sx={{ borderRadius: 3 }}>
           {t('expenses.noExpenses')}
         </Alert>
       ) : (
-        <TableContainer component={Paper} sx={{ overflowX: 'auto' }}>
+        <TableContainer component={Paper} sx={{ overflowX: 'auto', borderRadius: 3, p: 1, bgcolor: 'rgba(255,255,255,0.05)' }}>
           <Table>
             <TableHead>
-              <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
+              <TableRow sx={{ backgroundColor: 'rgba(255,255,255,0.06)' }}>
                 <TableCell>{t('expenses.date')}</TableCell>
                 <TableCell>{t('expenses.description')}</TableCell>
                 <TableCell>{t('expenses.category')}</TableCell>
                 <TableCell align="right">{t('expenses.amount')}</TableCell>
-                <TableCell align="center">Type</TableCell>
+                <TableCell align="center">{t('expenses.type')}</TableCell>
                 <TableCell align="center">{t('expenses.action')}</TableCell>
               </TableRow>
             </TableHead>
@@ -180,28 +208,28 @@ export default function Expenses() {
                   <TableCell>{transaction.category}</TableCell>
                   <TableCell align="right">
                     <Typography sx={{
-                      color: transaction.amount > 0 ? '#4caf50' : '#f44336',
-                      fontWeight: 'bold'
+                      color: transaction.amount > 0 ? 'success.main' : 'error.main',
+                      fontWeight: 'bold',
                     }}>
                       {transaction.amount > 0 ? '+' : ''}{transaction.amount.toFixed(2)}
                     </Typography>
                   </TableCell>
                   <TableCell align="center">
                     <Chip
-                      label={transaction.amount > 0 ? 'Income' : 'Expense'}
+                      label={transaction.amount > 0 ? t('expenses.income') : t('expenses.expense')}
                       color={transaction.amount > 0 ? 'success' : 'error'}
                       size="small"
                       variant="outlined"
                     />
                   </TableCell>
-                  <TableCell align="center" sx={{ display: 'flex', gap: 0.5 }}>
+                  <TableCell align="center" sx={{ display: 'flex', justifyContent: 'center', gap: 0.5 }}>
                     <Button
                       size="small"
                       startIcon={<EditIcon />}
                       onClick={() => handleOpenDialog(transaction)}
                       color="primary"
                     >
-                      Edit
+                      {t('common.edit')}
                     </Button>
                     <Button
                       size="small"
@@ -221,7 +249,7 @@ export default function Expenses() {
 
       <Dialog open={openDialog} onClose={() => setOpenDialog(false)} maxWidth="sm" fullWidth>
         <DialogTitle>
-          {editingId ? 'Edit Transaction' : t('expenses.addExpense')}
+          {editingId ? t('common.editTransaction') : t('expenses.addExpense')}
         </DialogTitle>
         <DialogContent sx={{ pt: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
           <TextField
@@ -245,7 +273,7 @@ export default function Expenses() {
             fullWidth
             value={formData.amount}
             onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
-            helperText="Positive for income, negative for expenses"
+            helperText={t('common.amountHelper')}
           />
           <FormControl fullWidth>
             <InputLabel>{t('expenses.category')}</InputLabel>

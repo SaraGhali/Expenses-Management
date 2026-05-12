@@ -1,30 +1,26 @@
-import {
-  Box,
-  Button,
-  Chip,
-  Container,
-  CssBaseline,
-  IconButton,
-  Menu,
-  MenuItem,
-} from '@mui/material'
+import { Box, Button, Chip, IconButton, Menu, MenuItem, Stack, Typography } from '@mui/material'
 import HistoryIcon from '@mui/icons-material/History'
 import HomeIcon from '@mui/icons-material/Home'
 import LanguageIcon from '@mui/icons-material/Language'
+import ListAltIcon from '@mui/icons-material/ReceiptLong'
+import PeopleIcon from '@mui/icons-material/People'
 import SignalCellularNullIcon from '@mui/icons-material/SignalCellularNull'
 import SummarizeIcon from '@mui/icons-material/Summarize'
 import TrendingUpIcon from '@mui/icons-material/TrendingUp'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useMemo } from 'react'
+import { authService } from '../../utils/authService'
 
 const navItems = [
-  { to: '/', icon: <HomeIcon fontSize="small" />, labelKey: 'navigation.dashboard', showIconLabeled: true },
-  { to: '/expenses', icon: <TrendingUpIcon fontSize="small" />, labelKey: 'navigation.expenses', showIconLabeled: true },
-  { to: '/summary', icon: <SummarizeIcon fontSize="small" />, labelKey: 'navigation.summary', showIconLabeled: true },
-  { to: '/reports', icon: <HistoryIcon fontSize="small" />, labelKey: 'navigation.reports', showIconLabeled: true },
+  { to: '/', icon: <HomeIcon fontSize="small" />, labelKey: 'navigation.dashboard' },
+  { to: '/transactions', icon: <ListAltIcon fontSize="small" />, labelKey: 'navigation.transactions' },
+  { to: '/users', icon: <PeopleIcon fontSize="small" />, labelKey: 'navigation.users' },
+  { to: '/summary', icon: <SummarizeIcon fontSize="small" />, labelKey: 'navigation.summary' },
+  { to: '/reports', icon: <HistoryIcon fontSize="small" />, labelKey: 'navigation.reports' },
 ]
 
 export default function AppNavbar({
+  user,
   isOnline,
   language,
   t,
@@ -34,180 +30,152 @@ export default function AppNavbar({
   navAnchorEl,
   setNavAnchorEl,
   isMobile,
+  onLanguageChange,
 }) {
   const languageMenuOpen = Boolean(anchorEl)
   const navMenuOpen = Boolean(navAnchorEl)
-
-  const handleChangeLanguage = (lang) => {
-    // i18n module lives in App.jsx; AppNavbar is just UI.
-    // App.jsx owns i18n and passes current language.
-    window.dispatchEvent(new CustomEvent('languageChanged', { detail: { lang } }))
-    setAnchorEl(null)
-  }
+  const navigate = useNavigate()
 
   const currentLang = useMemo(() => language?.toString?.() ?? 'en', [language])
 
+  const handleChangeLanguage = (lang) => {
+    onLanguageChange?.(lang)
+    setAnchorEl(null)
+  }
+
+  const handleLogout = async () => {
+    try {
+      await authService.logout()
+      navigate('/login')
+    } catch (error) {
+      console.error('Error logging out:', error)
+    }
+  }
+
   return (
-    <>
-      <CssBaseline />
-      <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', direction }}>
-        <Box component="header">
-          {/* AppBar element is owned by parent for theme gradient; we only render toolbar contents */}
-          <Box
-            component="nav"
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              px: 2,
-              py: 1,
-              gap: 1,
-              flexWrap: 'wrap',
-              direction,
-              '& > *': {
-                order: direction === 'rtl' ? 'inherit' : 'inherit'
-              }
-            }}
-          >
-            {/* Logo - First in LTR, Last in RTL */}
-            <Box 
-              sx={{ 
-                fontSize: '1.5rem', 
-                fontWeight: 700,
-                order: direction === 'rtl' ? 99 : 1,
-                mr: direction === 'rtl' ? 'auto' : 0,
-                ml: direction === 'rtl' ? 0 : 0
-              }}
-            >
-              {t('app.title')}
-            </Box>
+    <Box
+      component="nav"
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        flexWrap: 'wrap',
+        gap: 1,
+        px: 2,
+        py: 1,
+        width: '100%',
+        direction,
+      }}
+    >
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 0 }}>
+        <Typography
+          component={Link}
+          to="/"
+          variant="h5"
+          sx={{
+            fontWeight: 800,
+            color: 'white',
+            textDecoration: 'none',
+            letterSpacing: 0.5,
+          }}
+        >
+          {t('app.title')}
+        </Typography>
+      </Box>
 
-            {/* Navigation items - Middle section */}
-            {!isMobile && (
-              <Box 
-                sx={{ 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  gap: 0.5,
-                  order: 2,
-                  mx: 'auto'
-                }}
-              >
-                {navItems.map((item) => (
-                  <Button
-                    key={item.to}
-                    color="inherit"
-                    component={Link}
-                    to={item.to}
-                    startIcon={item.icon}
-                    sx={{ 
-                      whiteSpace: 'nowrap',
-                      fontSize: '0.85rem'
-                    }}
-                  >
-                    {t(item.labelKey)}
-                  </Button>
-                ))}
-              </Box>
-            )}
-
-            {/* Mobile menu button */}
-            {isMobile && (
-              <>
-                <IconButton
-                  color="inherit"
-                  onClick={(e) => setNavAnchorEl(e.currentTarget)}
-                  aria-label="open navigation"
-                  sx={{ order: 3, ml: 'auto' }}
-                >
-                  <HistoryIcon />
-                </IconButton>
-
-                <Menu
-                  anchorEl={navAnchorEl}
-                  open={navMenuOpen}
-                  onClose={() => setNavAnchorEl(null)}
-                >
-                  {navItems.map((item) => (
-                    <MenuItem
-                      key={item.to}
-                      component={Link}
-                      to={item.to}
-                      onClick={() => setNavAnchorEl(null)}
-                    >
-                      {item.icon}
-                      <Box sx={{ ml: 1 }}>{t(item.labelKey)}</Box>
-                    </MenuItem>
-                  ))}
-                </Menu>
-              </>
-            )}
-
-            {/* Language button - Right side in LTR, Left in RTL */}
+      {!isMobile ? (
+        <Stack direction="row" spacing={1} alignItems="center" sx={{ flexGrow: 1, justifyContent: 'center' }}>
+          {navItems.map((item) => (
             <Button
-              color="inherit"
-              startIcon={<LanguageIcon />}
-              onClick={(e) => setAnchorEl(e.currentTarget)}
-              sx={{ 
-                order: 4,
-                whiteSpace: 'nowrap',
-                fontSize: '0.9rem'
-              }}
-            >
-              {currentLang.toUpperCase()}
-            </Button>
-
-            <Menu 
-              anchorEl={anchorEl} 
-              open={languageMenuOpen} 
-              onClose={() => setAnchorEl(null)}
-              transformOrigin={direction === 'rtl' ? { horizontal: 'left', vertical: 'top' } : { horizontal: 'right', vertical: 'top' }}
-              anchorOrigin={direction === 'rtl' ? { horizontal: 'left', vertical: 'bottom' } : { horizontal: 'right', vertical: 'bottom' }}
-            >
-              <MenuItem onClick={() => handleChangeLanguage('en')} selected={currentLang === 'en'}>
-                English
-              </MenuItem>
-              <MenuItem onClick={() => handleChangeLanguage('ar')} selected={currentLang === 'ar'}>
-                العربية
-              </MenuItem>
-            </Menu>
-
-            {/* Offline chip */}
-            {!isOnline && (
-              <Chip
-                icon={<SignalCellularNullIcon />}
-                label={t('common.offline')}
-                color="error"
-                variant="outlined"
-                sx={{ 
-                  order: 5,
-                  color: 'white', 
-                  borderColor: 'white',
-                  fontSize: '0.75rem'
-                }}
-              />
-            )}
-
-            {/* Login button */}
-            <Button
+              key={item.to}
               color="inherit"
               component={Link}
-              to="/login"
-              sx={{ 
-                order: 6,
+              to={item.to}
+              startIcon={item.icon}
+              sx={{
                 whiteSpace: 'nowrap',
-                fontSize: '0.9rem'
+                fontSize: '0.85rem',
+                '& .MuiButton-startIcon': {
+                  ml: direction === 'rtl' ? 1 : 0,
+                  mr: direction === 'rtl' ? 0 : 1,
+                },
               }}
             >
-              {t('navigation.login') || 'Login'}
+              {t(item.labelKey)}
             </Button>
-          </Box>
-        </Box>
+          ))}
+        </Stack>
+      ) : (
+        <IconButton
+          color="inherit"
+          onClick={(e) => setNavAnchorEl(e.currentTarget)}
+          sx={{ ml: 'auto' }}
+        >
+          <HistoryIcon />
+        </IconButton>
+      )}
 
-        {/* parent renders footer + routes; keep navbar UI only */}
-        <Container maxWidth="lg" sx={{ py: 4, flex: 1 }} />
-      </Box>
-    </>
+      <Stack direction="row" spacing={1} alignItems="center" sx={{ minWidth: 0 }}>
+        <Button
+          color="inherit"
+          startIcon={<LanguageIcon />}
+          onClick={(e) => setAnchorEl(e.currentTarget)}
+          sx={{ whiteSpace: 'nowrap', fontSize: '0.9rem' }}
+        >
+          {currentLang.toUpperCase()}
+        </Button>
+
+        {!isOnline && (
+          <Chip
+            icon={<SignalCellularNullIcon />}
+            label={t('common.offline')}
+            color="error"
+            variant="outlined"
+            sx={{
+              color: 'white',
+              borderColor: 'rgba(255,255,255,0.18)',
+              fontSize: '0.75rem',
+            }}
+          />
+        )}
+      </Stack>
+
+      <Menu
+        anchorEl={anchorEl}
+        open={languageMenuOpen}
+        onClose={() => setAnchorEl(null)}
+        transformOrigin={direction === 'rtl' ? { horizontal: 'left', vertical: 'top' } : { horizontal: 'right', vertical: 'top' }}
+        anchorOrigin={direction === 'rtl' ? { horizontal: 'left', vertical: 'bottom' } : { horizontal: 'right', vertical: 'bottom' }}
+      >
+        <MenuItem onClick={() => handleChangeLanguage('en')} selected={currentLang === 'en'}>
+          English
+        </MenuItem>
+        <MenuItem onClick={() => handleChangeLanguage('ar')} selected={currentLang === 'ar'}>
+          العربية
+        </MenuItem>
+      </Menu>
+
+      <Menu anchorEl={navAnchorEl} open={navMenuOpen} onClose={() => setNavAnchorEl(null)}>
+        {navItems.map((item) => (
+          <MenuItem
+            key={item.to}
+            component={Link}
+            to={item.to}
+            onClick={() => setNavAnchorEl(null)}
+            sx={{
+              gap: 1,
+              '& .MuiSvgIcon-root': {
+                ml: direction === 'rtl' ? 1 : 0,
+                mr: direction === 'rtl' ? 0 : 1,
+              },
+            }}
+          >
+            {item.icon}
+            {t(item.labelKey)}
+          </MenuItem>
+        ))}
+      </Menu>
+    </Box>
   )
 }
 

@@ -32,22 +32,89 @@ export const transactionService = {
       throw error
     }
   },
-
-  // Get all transactions for a user
-  getUserTransactions: async (userId) => {
+  // Get all transactions 
+  getAllTransactions: async () => {
     try {
-      const q = query(
-        collection(db, TRANSACTIONS_COLLECTION),
-        where('userId', '==', userId),
-        orderBy('date', 'desc')
-      )
-      const querySnapshot = await getDocs(q)
-      return querySnapshot.docs.map(doc => ({
+      const querySnapshot = await getDocs(collection(db, TRANSACTIONS_COLLECTION))
+      const transactions = querySnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       }))
+      return transactions.sort((a, b) => new Date(b.date) - new Date(a.date))
+    } catch (error) {
+      console.error('Error fetching all transactions:', error)
+      throw error
+    }
+  },
+  // Get all transactions for a user
+  getUserTransactions: async (userId) => {
+    try {
+      const querySnapshot = await getDocs(
+        query(
+          collection(db, TRANSACTIONS_COLLECTION),
+          where('userId', '==', userId)
+        )
+      )
+      const transactions = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }))
+      return transactions.sort((a, b) => new Date(b.date) - new Date(a.date))
     } catch (error) {
       console.error('Error fetching transactions:', error)
+      throw error
+    }
+  },
+
+  // Get all registered users from Firestore users collection
+  getAllUsers: async () => {
+    try {
+      const usersRef = collection(db, 'users')
+      const querySnapshot = await getDocs(usersRef)
+      const users = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }))
+      return users.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+    } catch (error) {
+      console.error('Error fetching users:', error)
+      throw error
+    }
+  },
+
+  addUser: async (userData) => {
+    try {
+      const timestamp = new Date().toISOString()
+      const docRef = await addDoc(collection(db, 'users'), {
+        ...userData,
+        createdAt: timestamp,
+        updatedAt: timestamp
+      })
+      return { id: docRef.id, ...userData, createdAt: timestamp, updatedAt: timestamp }
+    } catch (error) {
+      console.error('Error adding user:', error)
+      throw error
+    }
+  },
+
+  updateUser: async (userId, updates) => {
+    try {
+      const userRef = doc(db, 'users', userId)
+      await updateDoc(userRef, {
+        ...updates,
+        updatedAt: new Date().toISOString()
+      })
+    } catch (error) {
+      console.error('Error updating user:', error)
+      throw error
+    }
+  },
+
+  deleteUser: async (userId) => {
+    try {
+      await deleteDoc(doc(db, 'users', userId))
+    } catch (error) {
+      console.error('Error deleting user:', error)
       throw error
     }
   },
