@@ -43,13 +43,13 @@ export default function Transactions() {
     }, [user, refresh]);
 
     const handleDelete = useCallback(async (id) => {
-        if (window.confirm('Are you sure you want to delete this transaction?')) {
+        if (window.confirm(t('common.confirmDelete'))) {
             try {
                 await transactionService.deleteTransaction(id);
                 await refresh();
             } catch (err) {
-                console.error('Error deleting transaction:', err);
-                alert('Error deleting transaction: ' + err.message);
+                console.error(t('common.errorDeleting'), err);
+                alert(t('common.errorDeleting') + err.message);
             }
         }
     }, [refresh]);

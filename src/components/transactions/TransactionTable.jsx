@@ -1,12 +1,15 @@
 import React from 'react';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Chip, IconButton } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { useAuthUser } from '../../hooks/useAuthUser';
+
 
 export const TransactionTable = React.memo(({ transactions, usersMap, onDelete, t }) => {
+    const { user } = useAuthUser();
     const getUserName = (item) => {
         if (item.userName) return item.userName;
         const mappedUser = usersMap[item.userId];
-        return mappedUser?.displayName || mappedUser?.name || item.userId || '—';
+        return mappedUser?.displayName || mappedUser?.name || user?.displayName || item.userId || '—';
     };
 
     return (

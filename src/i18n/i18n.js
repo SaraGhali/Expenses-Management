@@ -7,7 +7,7 @@ const resources = {
   ar: { translation: ar }
 }
 
-let currentLanguage = localStorage.getItem('language') || 'en'
+let currentLanguage = localStorage.getItem('language') || 'ar'
 let listeners = []
 
 export const i18n = {

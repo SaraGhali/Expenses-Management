@@ -31,15 +31,17 @@ const parseDateValue = (value) => {
 
 export const transactionService = {
   // Add new transaction
+
   addTransaction: async (userId, transactionData) => {
     try {
+      const { user } = useAuthUser();
       const docRef = await addDoc(collection(db, TRANSACTIONS_COLLECTION), {
         userId,
         ...transactionData,
         amount: parseFloat(transactionData.amount),
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
-      })
+        })
       return { id: docRef.id, ...transactionData }
     } catch (error) {
       console.error('Error adding transaction:', error)
