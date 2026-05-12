@@ -156,6 +156,9 @@
     "actions": "Actions",
     "pleaseLogin": "Please login to view this page",
     "user": "User",
-    "role": "Role"
+    "role": "Role",
+    "balance": "Balance",
+    "errorLoading": "Failed to load data",
+    "notAuthenticated": "Not authenticated - please login"
   }
 }

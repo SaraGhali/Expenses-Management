@@ -27,7 +27,7 @@ export default function Transactions() {
     const handleSave = useCallback(async (data) => {
         try {
             if (!user) {
-                alert('You must be logged in to add a transaction');
+                alert(t('common.notAuthenticated'));
                 return;
             }
             

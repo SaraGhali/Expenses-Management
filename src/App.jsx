@@ -62,15 +62,7 @@ function App() {
         i18n.changeLanguage(lang)
         setLanguage(lang)
     }
-    if (!user) {
-        return (
-            <Box sx={{ py: 8 }}>
-                <Typography variant="h6" align="center">
-                    {t('common.pleaseLogin')}
-                </Typography>
-            </Box>
-        )
-    }
+   
     return (
         <ThemeProvider theme={theme}>
             <CssBaseline />
