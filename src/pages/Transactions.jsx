@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useMemo } from 'react';
 import { Box, Typography, Button, CircularProgress, Alert } from '@mui/material';
 import { useTransactions } from '../hooks/useTransactions';
-import { transactionService } from '../utils/transactionService';
+import { transactionService } from '../utils/firebaseService.js';
 import { TransactionSummary } from '../components/transactions/TransactionSummary.jsx';
 import { TransactionTable } from '../components/transactions/TransactionTable.jsx';
 import { TransactionDialog } from '../components/transactions/TransactionDialog.jsx';

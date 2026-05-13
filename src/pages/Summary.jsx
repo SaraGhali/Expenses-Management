@@ -10,10 +10,10 @@ import { transactionService } from '../utils/firebaseService'
 // Reusable Components
 import { TransactionSummary } from '../components/transactions/TransactionSummary'
 import { TransactionTable } from '../components/transactions/TransactionTable'
-import { TransactionDialog } from '../components/transactions/TransactionDialog'
+// import { TransactionDialog } from '../components/transactions/TransactionDialog'
 
 const months = Array.from({ length: 12 }, (_, i) =>
-  new Intl.DateTimeFormat(i18n.getLanguage(), { month: 'long' }).format(new Date(2020, i, 1))
+  new Date(0, i).toLocaleString(i18n.getLanguage(),{ month: 'long' })
 )
 const currentYear = new Date().getFullYear()
 const years = Array.from({ length: 5 }, (_, i) => currentYear - 2 + i)
@@ -27,20 +27,7 @@ export default function Summary() {
   
   // Now extracting usersMap from our updated hook
   const { summary, usersMap, loading, error, refreshSummary } = useMonthlySummary(selectedYear, selectedMonth)
-  const [openDialog, setOpenDialog] = useState(false)
 
-  const handleSave = async (formData) => {
-    try {
-      await transactionService.addTransaction(user.uid, {
-        ...formData,
-        createdAt: new Date().toISOString()
-      })
-      await refreshSummary()
-      setOpenDialog(false)
-    } catch (err) {
-      alert(err.message)
-    }
-  }
 
   const handleDelete = async (id) => {
     if (!window.confirm(t('common.confirmDelete'))) return
@@ -86,11 +73,6 @@ export default function Summary() {
         <>
           <TransactionSummary totals={summary} t={t} />
           
-          <Box sx={{ mb: 2, display: 'flex', justifyContent: 'flex-end' }}>
-             <Button variant="contained" onClick={() => setOpenDialog(true)}>
-                {t('common.addTransaction')}
-             </Button>
-          </Box>
 
           <TransactionTable 
             transactions={summary.transactions} 
@@ -101,12 +83,12 @@ export default function Summary() {
         </>
       )}
 
-      <TransactionDialog 
+      {/* <TransactionDialog 
         open={openDialog} 
         onClose={() => setOpenDialog(false)} 
         onSave={handleSave} 
         t={t} 
-      />
+      /> */}
     </Box>
   )
 }

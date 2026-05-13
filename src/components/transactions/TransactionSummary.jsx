@@ -17,7 +17,7 @@ export const TransactionSummary = ({ totals, t }) => {
             <CardContent sx={{ p: 3 }}>
               <Typography variant="subtitle2" gutterBottom>{item.title}</Typography>
               <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
-                {item.value.toFixed(2)}
+                {item?.value?.toFixed(2)|| '0.00'}
               </Typography>
             </CardContent>
           </Card>
