@@ -37,8 +37,8 @@ export default function Transactions() {
             setOpenDialog(false);
             await refresh(); // Refresh the list after save
         } catch (err) {
-            console.error('Error saving transaction:', err);
-            alert('Error saving transaction: ' + err.message);
+            console.error(t('common.errorSaving'), err);
+            alert(t('common.errorSaving') + err.message);
         }
     }, [user, refresh]);
 

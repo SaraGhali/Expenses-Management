@@ -34,7 +34,6 @@ export const transactionService = {
 
   addTransaction: async (userId, transactionData) => {
     try {
-      const { user } = useAuthUser();
       const docRef = await addDoc(collection(db, TRANSACTIONS_COLLECTION), {
         userId,
         ...transactionData,
