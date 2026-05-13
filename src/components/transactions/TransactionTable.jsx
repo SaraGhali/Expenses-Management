@@ -37,7 +37,7 @@ export const TransactionTable = React.memo(({ transactions, usersMap, onDelete, 
                         <TableCell align="center" sx={{ fontWeight: 'bold' }}>{t('common.description')}</TableCell>
                         <TableCell align="center" sx={{ fontWeight: 'bold' }}>{t('common.amount')}</TableCell>
                         <TableCell align="center" sx={{ fontWeight: 'bold' }}>{t('common.date')}</TableCell>
-                        <TableCell align="center" sx={{ fontWeight: 'bold' }}>{t('common.balance') || 'Balance'}</TableCell>
+                        {/* <TableCell align="center" sx={{ fontWeight: 'bold' }}>{t('common.balance') || 'Balance'}</TableCell> */}
                         <TableCell align="center" sx={{ fontWeight: 'bold' }}>{t('common.actions')}</TableCell>
                     </TableRow>
                 </TableHead>
@@ -76,12 +76,12 @@ export const TransactionTable = React.memo(({ transactions, usersMap, onDelete, 
                                     {formatDate(item.createdAt || item.date)}
                                 </TableCell>
 
-                                {/* NEW: User's Current Balance */}
+                                {/* NEW: User's Current Balance
                                 <TableCell align="center">
                                     <Typography variant="body2" color="text.secondary" fontWeight={800}>
                                         {userInfo.balance.toLocaleString()}
                                     </Typography>
-                                </TableCell>
+                                </TableCell> */}
 
                                 {/* Actions */}
                                 <TableCell align="center">

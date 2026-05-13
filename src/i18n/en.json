@@ -159,6 +159,10 @@
     "role": "Role",
     "balance": "Balance",
     "errorLoading": "Failed to load data",
-    "notAuthenticated": "Not authenticated - please login"
+    "notAuthenticated": "Not authenticated - please login",
+    "language": "Language",
+    "english": "English",
+    "arabic": "Arabic",
+    "backToUsers": "Back to Users"
   }
 }

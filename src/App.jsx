@@ -21,6 +21,7 @@ import { i18n } from './i18n/i18n'
 import AppHeader from './components/layout/AppHeader'
 import AppNavbar from './components/layout/AppNavbar'
 import { useAuthUser } from './hooks/useAuthUser'
+import UserTransactions from './pages/UserTransactions'
 
 function App() {
     const [isOnline, setIsOnline] = useState(navigator.onLine)
@@ -101,6 +102,7 @@ function App() {
                             <Route path="/users" element={<Users />} />
                             <Route path="/summary" element={<Summary />} />
                             <Route path="/reports" element={<Reports />} />
+                            <Route path="/users/:userId" element={<UserTransactions />} />
                         </Routes>
                     </Container>
 

@@ -159,6 +159,10 @@
     "role": "الدور",
     "balance": "الرصيد",
     "errorLoading": "فشل في تحميل البيانات",
-    "notAuthenticated": "غير مصرح - يرجى تسجيل الدخول"
+    "notAuthenticated": "غير مصرح - يرجى تسجيل الدخول",
+    "language": "اللغة",
+    "english": "الإنجليزية",
+    "arabic": "العربية",
+    "backToUsers": "العودة إلى المستخدمين"
   }
 }

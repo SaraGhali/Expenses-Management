@@ -1,3 +1,4 @@
+import {Link} from 'react-router-dom';
 import AddIcon from '@mui/icons-material/Add'
 import DeleteIcon from '@mui/icons-material/Delete'
 import EditIcon from '@mui/icons-material/Edit'
@@ -209,22 +210,45 @@ export default function Users() {
             </TableHead>
             <TableBody>
               {users.map((user) => (
-                <TableRow key={user.id} hover>
-                  <TableCell>{user.displayName || user.name || '—'}</TableCell>
-                  <TableCell>{user.email || '—'}</TableCell>
-                  <TableCell>{formatBalance(user.balance)}</TableCell>
-                  <TableCell>{user.createdAt ? formatTimestamp(user.createdAt) : '—'}</TableCell>
-                  <TableCell align="center">
-                    <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1 }}>
-                      <Button size="small" startIcon={<EditIcon />} onClick={() => openEditDialog(user)}>
-                        {t('common.edit')}
-                      </Button>
-                      <Button size="small" color="error" startIcon={<DeleteIcon />} onClick={() => handleDeleteUser(user)}>
-                        {t('common.delete')}
-                      </Button>
-                    </Box>
-                  </TableCell>
-                </TableRow>
+              <TableRow key={user.id} hover>
+                <TableCell>
+                  {/* Make the name clickable */}
+                  <Typography
+                    component={Link}
+                    to={`/users/${user.id}`}
+                    sx={{
+                      fontWeight: 600,
+                      textDecoration: 'none',
+                      color: 'primary.main',
+                      '&:hover': { textDecoration: 'underline' }
+                    }}
+                  >
+                    {user.displayName || user.name || '—'}
+                  </Typography>
+                </TableCell>
+                <TableCell>{user.email || '—'}</TableCell>
+                <TableCell>{formatBalance(user.balance)}</TableCell>
+                <TableCell>{user.createdAt ? formatTimestamp(user.createdAt) : '—'}</TableCell>
+                <TableCell align="center">
+                  <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1 }}>
+                    {/* Optional: Add a dedicated view button */}
+                    {/* <IconButton
+                      component={Link}
+                      to={`/users/${user.id}`}
+                      color="primary"
+                      size="small"
+                    >
+                      <Typography variant="caption" sx={{ mr: 1 }}>{t('common.view') || 'View'}</Typography>
+                    </IconButton> */}
+                    <IconButton size="small" onClick={() => openEditDialog(user)}>
+                      <EditIcon fontSize="small" />
+                    </IconButton>
+                    <IconButton size="small" color="error" onClick={() => handleDeleteUser(user)}>
+                      <DeleteIcon fontSize="small" />
+                    </IconButton>
+                  </Box>
+                </TableCell>
+              </TableRow>
               ))}
             </TableBody>
           </Table>
