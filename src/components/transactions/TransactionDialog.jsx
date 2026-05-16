@@ -62,7 +62,7 @@ export const TransactionDialog = ({ open, onClose, onSave, users, t }) => {
                 <TextField
                     type="date"
                     label={t('common.date')}
-                    value={formData.date}
+                    value={formData.createdAt}
                     onChange={(e) => setFormData({ ...formData, date: e.target.value })}
                     InputLabelProps={{ shrink: true }}
                 />

@@ -188,7 +188,7 @@ export default function Expenses() {
             <TableBody>
               {transactions.map((transaction) => (
                 <TableRow key={transaction.id} hover>
-                  <TableCell>{new Date(transaction.date).toLocaleDateString()}</TableCell>
+                  <TableCell>{new Date(transaction.createdAt).toLocaleDateString()}</TableCell>
                   <TableCell>{transaction.description}</TableCell>
                   <TableCell>{transaction.category}</TableCell>
                   <TableCell align="right">
@@ -240,8 +240,8 @@ export default function Expenses() {
           <TextField
             label={t('expenses.date')}
             type="date"
-            value={formData.date}
-            onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+            value={formData.createdAt}
+            onChange={(e) => setFormData({ ...formData, createdAt: e.target.value })}
             fullWidth
             InputLabelProps={{ shrink: true }}
           />
