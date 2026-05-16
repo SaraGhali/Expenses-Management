@@ -32,6 +32,7 @@ import { useAuthUser } from '../hooks/useAuthUser'
 import { useTransactions } from '../hooks/useTransactions'
 import { i18n } from '../i18n/i18n'
 import { TRANSACTION_CATEGORIES } from '../constants'
+import { formatCurrency } from '../utils/format'
 
 export default function Expenses() {
   const navigate = useNavigate()
@@ -148,16 +149,16 @@ export default function Expenses() {
       <Box sx={{ display: 'grid', gap: 2, gridTemplateColumns: { xs: '1fr', md: '1fr 1fr 1fr' }, mb: 4 }}>
         <Paper sx={{ p: 3, bgcolor: 'rgba(255,255,255,0.05)', borderRadius: 3 }}>
           <Typography sx={{ color: 'text.secondary', mb: 1 }}>Income</Typography>
-          <Typography variant="h4" sx={{ fontWeight: 800 }}>+${totalIncome.toFixed(2)}</Typography>
+          <Typography variant="h4" sx={{ fontWeight: 800 }}>{formatCurrency(totalIncome, i18n.getLanguage(), true)}</Typography>
         </Paper>
         <Paper sx={{ p: 3, bgcolor: 'rgba(255,255,255,0.05)', borderRadius: 3 }}>
           <Typography sx={{ color: 'text.secondary', mb: 1 }}>Expenses</Typography>
-          <Typography variant="h4" sx={{ fontWeight: 800 }}>-${totalExpenses.toFixed(2)}</Typography>
+          <Typography variant="h4" sx={{ fontWeight: 800 }}>{formatCurrency(totalExpenses, i18n.getLanguage(), false)}</Typography>
         </Paper>
         <Paper sx={{ p: 3, bgcolor: 'rgba(255,255,255,0.05)', borderRadius: 3 }}>
           <Typography sx={{ color: 'text.secondary', mb: 1 }}>Balance</Typography>
           <Typography variant="h4" sx={{ fontWeight: 800, color: currentBalance >= 0 ? 'success.main' : 'error.main' }}>
-            ${currentBalance.toFixed(2)}
+            {formatCurrency(currentBalance, i18n.getLanguage())}
           </Typography>
         </Paper>
       </Box>
@@ -196,7 +197,7 @@ export default function Expenses() {
                       color: transaction.amount > 0 ? 'success.main' : 'error.main',
                       fontWeight: 'bold',
                     }}>
-                      {transaction.amount > 0 ? '+' : ''}{transaction.amount.toFixed(2)}
+                      {formatCurrency(transaction.amount, i18n.getLanguage(), true)}
                     </Typography>
                   </TableCell>
                   <TableCell align="center">

@@ -33,6 +33,7 @@ import {
 } from '@mui/material'
 import { transactionService } from '../utils/firebaseService'
 import { i18n } from '../i18n/i18n'
+import { formatCurrency } from '../utils/format'
 
 const defaultForm = {
   displayName: '',
@@ -68,7 +69,7 @@ export default function Users() {
 
   const formatBalance = (value) => {
     const amount = Number(value)
-    return Number.isFinite(amount) ? amount.toFixed(2) : '—'
+    return Number.isFinite(amount) ? formatCurrency(amount, i18n.getLanguage()) : '—'
   }
 
   const fetchUsers = async () => {

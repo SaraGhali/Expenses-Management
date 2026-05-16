@@ -7,6 +7,7 @@ import { useAuthUser } from '../hooks/useAuthUser'
 import { useTransactions } from '../hooks/useTransactions'
 import { i18n } from '../i18n/i18n'
 import StatCard from '../components/ui/StatCard'
+import { formatCurrency } from '../utils/format'
 
 
 
@@ -96,7 +97,7 @@ export default function Dashboard() {
         <Grid item xs={12} sm={6} md={3}>
           <StatCard
             title={t('dashboard.income')}
-            value={`+$${totalIncome.toFixed(2)}`}
+            value={formatCurrency(totalIncome, i18n.getLanguage(), true)}
             icon={TrendingUpIcon}
             gradient={['#667eea', '#764ba2']}
             loading={loading}
@@ -105,7 +106,7 @@ export default function Dashboard() {
         <Grid item xs={12} sm={6} md={3}>
           <StatCard
             title={t('dashboard.totalExpenses')}
-            value={`-$${totalExpenses.toFixed(2)}`}
+            value={formatCurrency(totalExpenses, i18n.getLanguage(), false)}
             icon={TrendingDownIcon}
             gradient={['#f093fb', '#f5576c']}
             loading={loading}
@@ -114,7 +115,7 @@ export default function Dashboard() {
         <Grid item xs={12} sm={6} md={3}>
           <StatCard
             title={t('dashboard.thisMonth')}
-            value={`+$${monthlyIncome.toFixed(2)}`}
+            value={formatCurrency(monthlyIncome, i18n.getLanguage(), true)}
             icon={TrendingUpIcon}
             gradient={['#4caf50', '#45a049']}
             loading={loading}
@@ -123,7 +124,7 @@ export default function Dashboard() {
         <Grid item xs={12} sm={6} md={3}>
           <StatCard
             title={t('dashboard.monthlyBudget')}
-            value={`-$${monthlyExpenses.toFixed(2)}`}
+            value={formatCurrency(monthlyExpenses, i18n.getLanguage(), false)}
             icon={TrendingDownIcon}
             gradient={['#ff9800', '#f57c00']}
             loading={loading}
@@ -137,7 +138,7 @@ export default function Dashboard() {
                 {t('dashboard.remaining')}
               </Typography>
               <Typography variant="h4" sx={{ fontWeight: 800, mb: 1 }}>
-                ${(monthlyIncome - monthlyExpenses).toFixed(2)}
+                {formatCurrency(monthlyIncome - monthlyExpenses, i18n.getLanguage())}
               </Typography>
               <Typography sx={{ color: 'text.secondary' }}>
                 {t('dashboard.netBalanceDescription') || 'Your remaining balance for the current month.'}

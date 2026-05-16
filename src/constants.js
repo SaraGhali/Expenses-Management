@@ -16,6 +16,11 @@ export const TRANSACTION_CATEGORIES = [
   'Other'
 ]
 
+
+export const CURRENCY_LOCALES = {
+  en: 'en-US'
+}
+
 export const MESSAGES = {
   FILL_ALL_FIELDS: 'expenses.fillAllFields',
   LOGIN_REQUIRED: 'Please login to continue',

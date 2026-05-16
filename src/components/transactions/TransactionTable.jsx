@@ -4,6 +4,8 @@ import {
     TableHead, TableRow, Paper, IconButton, Typography
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { formatCurrency } from '../../utils/format';
+import { i18n } from '../../i18n/i18n';
 
 export const TransactionTable = React.memo(({ transactions, usersMap, onDelete, t ,userCol=true}) => {
 
@@ -69,7 +71,7 @@ export const TransactionTable = React.memo(({ transactions, usersMap, onDelete, 
                                         fontWeight={700}
                                         sx={{ color: isPositive ? 'success.main' : 'error.main' }}
                                     >
-                                        {isPositive ? `+${item.amount}` : item.amount}
+                                        {formatCurrency(item.amount, i18n.getLanguage(), true)}
                                     </Typography>
                                 </TableCell>
 

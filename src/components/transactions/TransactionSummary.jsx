@@ -1,12 +1,29 @@
 import { Grid, Card, CardContent, Typography } from '@mui/material';
+import { formatCurrency } from '../../utils/format';
+import { i18n } from '../../i18n/i18n';
 
 export const TransactionSummary = ({ totals, t }) => {
   const net = totals.income - totals.expenses;
 
   const summaryItems = [
-    { title: t('dashboard.totalIncome'), value: totals.income, color: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' },
-    { title: t('dashboard.totalExpenses'), value: totals.expenses, color: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' },
-    { title: t('common.netBalance'), value: net, color: net >= 0 ? 'success.main' : 'error.main' }
+    { 
+      title: t('dashboard.totalIncome'), 
+      value: totals.income, 
+      color: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      showSign: true
+    },
+    { 
+      title: t('dashboard.totalExpenses'), 
+      value: totals.expenses, 
+      color: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+      showSign: false
+    },
+    { 
+      title: t('common.netBalance'), 
+      value: net, 
+      color: net >= 0 ? 'success.main' : 'error.main',
+      showSign: false
+    }
   ];
 
   return (
@@ -17,7 +34,7 @@ export const TransactionSummary = ({ totals, t }) => {
             <CardContent sx={{ p: 3 }}>
               <Typography variant="subtitle2" gutterBottom>{item.title}</Typography>
               <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
-                {item?.value?.toFixed(2)|| '0.00'}
+                {formatCurrency(item.value || 0, i18n.getLanguage(), item.showSign)}
               </Typography>
             </CardContent>
           </Card>

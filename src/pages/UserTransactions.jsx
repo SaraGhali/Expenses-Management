@@ -8,7 +8,8 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { transactionService } from '../utils/firebaseService';
 import { TransactionTable } from '../components/transactions/TransactionTable.jsx';
 import { i18n } from '../i18n/i18n';
-
+import { useUserMonthlySummary } from '../hooks/useUserMonthlySummary.js';
+import { TransactionSummary } from '../components/transactions/TransactionSummary.jsx';
 export default function UserTransactions() {
     const { userId } = useParams();
     const navigate = useNavigate();
@@ -21,6 +22,8 @@ export default function UserTransactions() {
     const [transactions, setTransactions] = useState([]);
     const [userData, setUserData] = useState(null);
     const [loading, setLoading] = useState(true);
+
+    const { userSummary, loading: userLoading, error: userError, refreshUserSummary } = useUserMonthlySummary(year, month, userId);
 
     const loadData = useCallback(async () => {
         try {
@@ -80,6 +83,8 @@ export default function UserTransactions() {
                         <Typography variant="h6" color="success.main">
                             {t('users.balance')}: {userData?.balance?.toLocaleString() || '0.00'}
                         </Typography>
+                        
+
                     </Box>
 
                     {/* Filter Section */}
@@ -104,6 +109,7 @@ export default function UserTransactions() {
                     </Stack>
                 </Stack>
             </Paper>
+            <TransactionSummary totals={userSummary} t={t} />
 
             <TransactionTable 
                 transactions={transactions} 

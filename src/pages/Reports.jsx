@@ -5,6 +5,7 @@ import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAx
 import { useAuthUser } from '../hooks/useAuthUser'
 import { useYearlyStats } from '../hooks/useYearlyStats'
 import { i18n } from '../i18n/i18n'
+import { formatCurrency } from '../utils/format'
 
 const COLORS = ['#667eea', '#764ba2', '#f093fb', '#f5576c', '#ff9800', '#4caf50', '#00bcd4', '#9c27b0']
 
@@ -79,7 +80,7 @@ export default function Reports() {
                     {t('dashboard.totalIncome')}
                   </Typography>
                   <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
-                    +${stats.income.toFixed(2)}
+                    {formatCurrency(stats.income, i18n.getLanguage(), true)}
                   </Typography>
                 </CardContent>
               </Card>
@@ -95,7 +96,7 @@ export default function Reports() {
                     {t('dashboard.totalExpenses')}
                   </Typography>
                   <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
-                    -${Math.abs(stats.expenses).toFixed(2)}
+                    {formatCurrency(stats.expenses, i18n.getLanguage(), false)}
                   </Typography>
                 </CardContent>
               </Card>
@@ -192,13 +193,13 @@ export default function Reports() {
                     <Typography sx={{ fontWeight: 500 }}>{category.name}</Typography>
                     <Box sx={{ display: 'flex', gap: 3 }}>
                       <Typography sx={{ color: '#4caf50' }}>
-                        +${category.income.toFixed(2)}
+                        {formatCurrency(category.income, i18n.getLanguage(), true)}
                       </Typography>
                       <Typography sx={{ color: '#f44336' }}>
-                        -${category.expenses.toFixed(2)}
+                        {formatCurrency(category.expenses, i18n.getLanguage(), false)}
                       </Typography>
-                      <Typography sx={{ fontWeight: 'bold', minWidth: '100px', textAlign: 'right' }}>
-                        ${(category.income - category.expenses).toFixed(2)}
+                      <Typography sx={{ fontWeight: 'bold', minWidth: '120px', textAlign: 'right' }}>
+                        {formatCurrency(category.income - category.expenses, i18n.getLanguage())}
                       </Typography>
                     </Box>
                   </Box>
