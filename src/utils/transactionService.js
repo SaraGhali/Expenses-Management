@@ -95,7 +95,7 @@ export const transactionService = {
                 id: doc.id,
                 ...doc.data(),
                 createdAt: parseDateValue(doc.data().createdAt),
-                date: parseDateValue(doc.data().date)
+                // date: parseDateValue(doc.data().date)
             }));
         } catch (error) {
             console.error('Fetch Error:', error);

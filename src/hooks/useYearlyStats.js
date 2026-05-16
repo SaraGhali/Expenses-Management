@@ -20,7 +20,7 @@ export function useYearlyStats(userId, year) {
       // Get all transactions for the year
       const allTransactions = await transactionService.getUserTransactions(userId)
       const yearTransactions = allTransactions.filter(trans => {
-        const date = new Date(trans.date)
+        const date = new Date(trans.createdAt)
         return date.getFullYear() === year
       })
 
@@ -37,7 +37,7 @@ export function useYearlyStats(userId, year) {
         let monthExpenses = 0
 
         yearTransactions.forEach(trans => {
-          const date = new Date(trans.date)
+          const date = new Date(trans.createdAt)
           if (date.getMonth() === month) {
             if (trans.amount > 0) {
               monthIncome += trans.amount

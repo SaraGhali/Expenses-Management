@@ -143,7 +143,7 @@ export const transactionService = {
                 id: doc.id,
                 ...doc.data(),
                 createdAt: parseDateValue(doc.data().createdAt),
-                date: parseDateValue(doc.data().date)
+                // date: parseDateValue(doc.data().date)
             }))
         } catch (error) {
             console.error('Error fetching all transactions:', error)
@@ -178,7 +178,7 @@ export const transactionService = {
             else allTransactions = await transactionService.getUserTransactions(userId)
             
             const filtered = allTransactions.filter(trans => {
-                const transDate = trans.date || trans.createdAt
+                const transDate = trans.createdAt 
                 if (!transDate) return false
                 return transDate.getFullYear() === year && transDate.getMonth() === month - 1
             })

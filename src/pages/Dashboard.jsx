@@ -37,7 +37,7 @@ export default function Dashboard() {
   let monthlyExpenses = 0
 
   transactions.forEach(trans => {
-    const transDate = new Date(trans.date)
+    const transDate = new Date(trans.createdAt)
     const isCurrentMonth = transDate.getMonth() === currentMonth && transDate.getFullYear() === currentYear
 
     if (trans.amount > 0) {

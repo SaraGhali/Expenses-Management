@@ -73,7 +73,7 @@ export const TransactionTable = React.memo(({ transactions, usersMap, onDelete, 
 
                                 {/* Date */}
                                 <TableCell align="center" sx={{ whiteSpace: 'nowrap' }}>
-                                    {formatDate(item.createdAt || item.date)}
+                                    {formatDate(item.createdAt)}
                                 </TableCell>
 
                                 {/* NEW: User's Current Balance
