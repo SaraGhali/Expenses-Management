@@ -9,7 +9,7 @@ export const TransactionDialog = ({ open, onClose, onSave, users, t }) => {
         userId: '',
         description: '',
         amount: '',
-        date: new Date().toISOString().split('T')[0]
+        createdAt: new Date().toISOString().split('T')[0]
     });
 
     useEffect(() => {
@@ -18,7 +18,7 @@ export const TransactionDialog = ({ open, onClose, onSave, users, t }) => {
                 userId: '',
                 description: '',
                 amount: '',
-                date: new Date().toISOString().split('T')[0]
+                createdAt: new Date().toISOString().split('T')[0]
             });
         }
     }, [open]);
@@ -63,7 +63,7 @@ export const TransactionDialog = ({ open, onClose, onSave, users, t }) => {
                     type="date"
                     label={t('common.date')}
                     value={formData.createdAt}
-                    onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                    onChange={(e) => setFormData({ ...formData, createdAt: e.target.value })}
                     InputLabelProps={{ shrink: true }}
                 />
             </DialogContent>

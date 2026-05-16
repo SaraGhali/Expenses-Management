@@ -5,7 +5,7 @@ import {
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 
-export const TransactionTable = React.memo(({ transactions, usersMap, onDelete, t }) => {
+export const TransactionTable = React.memo(({ transactions, usersMap, onDelete, t ,userCol=true}) => {
 
     /**
      * OPTIMIZATION: Memoized name lookup. 
@@ -33,7 +33,7 @@ export const TransactionTable = React.memo(({ transactions, usersMap, onDelete, 
             <Table stickyHeader>
                 <TableHead>
                     <TableRow>
-                        <TableCell sx={{ fontWeight: 'bold' }}>{t('common.user')}</TableCell>
+                        {userCol && <TableCell sx={{ fontWeight: 'bold' }}>{t('common.user')}</TableCell>}
                         <TableCell align="center" sx={{ fontWeight: 'bold' }}>{t('common.description')}</TableCell>
                         <TableCell align="center" sx={{ fontWeight: 'bold' }}>{t('common.amount')}</TableCell>
                         <TableCell align="center" sx={{ fontWeight: 'bold' }}>{t('common.date')}</TableCell>
@@ -49,11 +49,13 @@ export const TransactionTable = React.memo(({ transactions, usersMap, onDelete, 
                         return (
                             <TableRow key={item.id} hover>
                                 {/* User Name */}
-                                <TableCell>
-                                    <Typography variant="body2" fontWeight={600}>
-                                        {userInfo.name}
-                                    </Typography>
-                                </TableCell>
+                                {userCol && (
+                                    <TableCell>
+                                        <Typography variant="body2" fontWeight={600}>
+                                            {userInfo.name}
+                                        </Typography>
+                                    </TableCell>
+                                )}
 
                                 {/* Description/Note */}
                                 <TableCell align="center">

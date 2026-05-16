@@ -110,6 +110,7 @@ export default function UserTransactions() {
                 usersMap={{ [userId]: userData }}
                 onDelete={handleDelete}
                 t={t} 
+                userCol={false} // Hide user column since we're already in a specific user's view
             />
         </Box>
     );
